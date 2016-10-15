@@ -3,7 +3,7 @@ difGenes = function(group1,group2, geneCount = 10){
   group2 = expression[,group2]
 
   group1Median = group1 %>% apply(1,mean)
-  group1Median = group2 %>% apply(1,mean)
+  group2Median = group2 %>% apply(1,mean)
   
   fChange = group1Median - group2Median
   
