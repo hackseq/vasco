@@ -15,7 +15,6 @@ library(Matrix)
 library(plotly)
 library(magrittr)
 
-#plot_ly(pbmc3k, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id)
 
 source('helpers.R')
 
@@ -24,7 +23,7 @@ source('helpers.R')
 shinyServer(function(input, output) {
     output$tSNEPlot <- renderPlotly({
         # size of the bins depend on the input 'bins'
-        plot_ly(pbmc3k, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id)
+        plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id)
 
     })
 })
