@@ -16,7 +16,7 @@ library(plotly)
 library(magrittr)
 
 
-source('difGene.R')
+source('difGenes.R')
 source('helpers.R')
 
 
@@ -29,15 +29,22 @@ shinyServer(function(input, output) {
 
   })
   selected_data <- reactive({event_data("plotly_selected")})
-
-  output$brush <- renderPrint({ selected_data()
+  
+  selected_vector = reactive({
+    barcodes$Barcode %in% selected_data()$key
   })
 
-  selected_expression = reactive({
-    matrix[,barcodes$Barcode %in% selected_data()$key]
+  output$brush <- renderPrint({ differentiallyExpressed()
   })
 
 
-
+  differentiallyExpressed = reactive({
+    print('should I calculate dif genes?')
+    if(!is.null(selected_data())){
+      print('yeah I guess')
+      difGenes(group1 = selected_vector(), 
+               group2 = !selected_vector())
+    }
+  })
 })
 
