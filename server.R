@@ -20,7 +20,7 @@ source('difGenes.R')
 
 
 # Define server logic required to draw a histogram
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
   output$tSNEPlot <- renderPlotly({
     # size of the bins depend on the input 'bins'
     plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode) %>%
@@ -45,5 +45,24 @@ shinyServer(function(input, output) {
                group2 = !selected_vector())
     }
   })
+  
+  selected_to_plot <- eventReactive(input$plot_selected,{
+    
+         event_data("plotly_selected")
+     
+       })
+  
+  observeEvent(input$plot_selected, {
+        updateTabsetPanel(session, "main_panel", selected = "Explore")
+     
+       })
+  
+  output$newPlot <- renderPlotly({
+       
+        new_tsne <- selected_to_plot()
+         plot_ly(new_tsne, x = ~x, y = ~y, text = ~key) %>%
+            layout(dragmode = "select")})
+  
+  
 })
 
