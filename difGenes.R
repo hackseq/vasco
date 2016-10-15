@@ -1,4 +1,4 @@
-difGenes = function(group1,group2, geneCount = 50){
+difGenes = function(group1,group2, geneCount = 10){
   group1 = expression[,group1]
   group2 = expression[,group2]
 
