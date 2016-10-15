@@ -16,22 +16,28 @@ library(plotly)
 library(magrittr)
 
 
+source('difGene.R')
 source('helpers.R')
 
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
-    output$tSNEPlot <- renderPlotly({
-        # size of the bins depend on the input 'bins'
-        plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode) %>%
-        layout(dragmode = "select")
-        
-    })
-    selected_data <- reactive({event_data("plotly_selected")})
-    
-    output$brush <- renderPrint({ selected_data()
-                                     })
- 
-    
+  output$tSNEPlot <- renderPlotly({
+    # size of the bins depend on the input 'bins'
+    plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode) %>%
+      layout(dragmode = "select")
+
+  })
+  selected_data <- reactive({event_data("plotly_selected")})
+
+  output$brush <- renderPrint({ selected_data()
+  })
+
+  selected_expression = reactive({
+    matrix[,barcodes$Barcode %in% selected_data()$key]
+  })
+
+
+
 })
 
