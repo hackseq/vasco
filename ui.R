@@ -16,11 +16,11 @@ shinyUI(fluidPage(
   titlePanel("Single cell vis"),
   tabsetPanel(
     tabPanel('tSNE',
-             plotlyOutput('tSNEPlot')
-    ),
-    tabPanel('Next big thing')
+             fluidRow(column(4,wellPanel(textInput('geneSelect', "Selected Genes", placeholder = 'ENO2, CD8'))),
+                      column(8,plotlyOutput('tSNEPlot'))
+                      ),
+    tabPanel('Querry genes'),
+    tabPanel('')
+    )
   )
-
-)
-
-)
+))
