@@ -17,7 +17,6 @@ library(magrittr)
 
 
 source('difGenes.R')
-source('helpers.R')
 
 
 # Define server logic required to draw a histogram
