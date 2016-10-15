@@ -1,0 +1,49 @@
+---
+title: "Explore the data"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load-libs}
+library(dplyr)
+library(tidyr)
+library(readr)
+library(plotly)
+# library(Matrix) for loading mtx file
+```
+
+```{r proj_dir, echo=FALSE}
+proj_dir <- "/Users/csiu/project/hackseq/ssviz"
+data_dir <- file.path(proj_dir, "Data")
+```
+
+## Files
+
+```{r}
+# The data:
+mtx_file <- file.path(data_dir, "redstone_1_matrix.mtx")
+
+# Gene info:
+gene_file <- file.path(data_dir, "redstone_1_genes.tsv")
+
+# Cell barcode; ~2600 of them:
+barcode_file <- file.path(data_dir, "redstone_1_barcodes.tsv")
+
+tsne_file <- file.path(data_dir, "redstone_pbmc3k_tdf")
+```
+
+## Load
+
+```{r}
+mtx <- Matrix::readMM(mtx_file)
+dat_gene <- read_tsv(gene_file, col_names = c("gene_id", "gene_name"))
+dat_barcode <- read_tsv(barcode_file, col_names = "barcode")
+dat_tsne <- read_tsv(tsne_file, skip = 1, 
+                     col_names = c("barcode", "tSNE_1", "tSNE_2", "id"))
+```
+
+
+
