@@ -27,7 +27,11 @@ shinyServer(function(input, output) {
         layout(dragmode = "select")
         
     })
-    output$brush <- renderPrint({ event_data("plotly_selected")
+    selected_data <- reactive({event_data("plotly_selected")})
+    
+    output$brush <- renderPrint({ selected_data()
                                      })
+ 
+    
 })
 
