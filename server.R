@@ -23,7 +23,11 @@ source('helpers.R')
 shinyServer(function(input, output) {
     output$tSNEPlot <- renderPlotly({
         # size of the bins depend on the input 'bins'
-        plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id)
-
+        plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id) %>%
+        layout(dragmode = "select")
+        
     })
+    output$brush <- renderPrint({ event_data("plotly_selected")
+                                     })
 })
+

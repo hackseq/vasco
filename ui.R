@@ -11,7 +11,7 @@ library(shiny)
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
-
+  verbatimTextOutput("brush"),
   # Application title
   titlePanel("Single cell vis"),
   tabsetPanel(
