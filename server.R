@@ -49,13 +49,16 @@ shinyServer(function(input, output, session) {
 
   #shows the button when first population selected in plot
   observeEvent(selected_data(),{
-    show("pop_one_selected")
+    if(is.null(selected_data()) | is.null(dim(selected_data()))){
+      disable("pop_one_selected")
+    } else{
+      enable('pop_one_selected')
+    }
   })
-
 
   observe({
   #hide button one and two on load
-  hide(id="pop_one_selected")
+  disable(id="pop_one_selected")
   hide(id="pop_two_selected")
   #hide second plot on load
   hide(id="div_select_two")
