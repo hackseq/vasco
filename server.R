@@ -56,11 +56,14 @@ shinyServer(function(input, output, session) {
     show("pop_two_selected")
   })
   
+  observe({
   #hide button one and two on load
   hide(id="pop_one_selected")
   hide(id="pop_two_selected")
   #hide second plot on load
   hide(id="div_select_two")
+  
+  })
   
   #render second selection plot when first population locked-in
   output$tSNE_select_two <- renderPlotly({
@@ -73,14 +76,14 @@ shinyServer(function(input, output, session) {
   observeEvent(input$pop_one_selected, {
     html(id = "select_text", "Please select second population")
     disable(id = "pop_one_selected")
-    hide(id="div_select_one")
     show(id= "div_select_two")
+    hide(id="div_select_one")
     
   })
   
   # when button two is clicked, update ui and assign cell population to var
   observeEvent(input$pop_two_selected, {
-    html(id = "select_text", "")
+    html(id = "select_text", "Loading...")
     disable(id = "pop_two_selected")
   })
   
