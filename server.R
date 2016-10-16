@@ -58,10 +58,6 @@ shinyServer(function(input, output, session) {
     show("pop_one_selected")
   })
 
-  #shows the button when second population selected in plot
-  observeEvent(selected_data_two(),{
-    show("pop_two_selected")
-  })
 
   observe({
   #hide button one and two on load
@@ -70,6 +66,7 @@ shinyServer(function(input, output, session) {
   #hide second plot on load
   hide(id="div_select_two")
   hide(id="comparisonOutput")
+  hide(id = 'downloadDifGenes')
   hide(id="reload")
   })
   
@@ -88,10 +85,12 @@ shinyServer(function(input, output, session) {
   })
 
   # when button one is clicked, update ui and assign cell population to var
+  # and show button two
   observeEvent(input$pop_one_selected, {
-    html(id = "select_text", "Please select second population")
+    html(id = "select_text", "Please select second population, or press save to select all outside group 1")
     disable(id = "pop_one_selected")
     show(id= "div_select_two")
+    show("pop_two_selected")
     hide(id="div_select_one")
 
   })
@@ -124,27 +123,46 @@ shinyServer(function(input, output, session) {
       hide('div_select_two')
       if(input$pop_two_selected == 1){
         isolate({
-          tsneSubset = tsne[tsne$tSNE_1 %in% selected_data_two()$x & tsne$tSNE_2 %in% selected_data_two()$y,]
-          barcodes$Barcode %in% tsneSubset$barcode
+          if(!is.null(selected_data_two())){
+            tsneSubset = tsne[tsne$tSNE_1 %in% selected_data_two()$x & tsne$tSNE_2 %in% selected_data_two()$y,]
+            barcodes$Barcode %in% tsneSubset$barcode
+          } else {
+            !selected_vector1()
+          }
         })
       }
     }
   )
+
+  output$downloadDifGenes = downloadHandler(
+    filename = 'difGenes.tsv',
+    content = function(file) {
+      write_tsv(differentiallyExpressed(), file)
+    })
 
 
   differentiallyExpressed = reactive({
     print('should I calculate dif genes?')
       print('yeah I guess')
       if(!is.null(selected_vector2()) & !is.null(selected_vector1())){
+        show('downloadDifGenes')
         difGenes(group1 = isolate(selected_vector1()),
                  group2 = selected_vector2())
       }
   })
 
-  
+
   output$difGeneTable = renderDataTable({
     if(!is.null(differentiallyExpressed())){
-      differentiallyExpressed()
+      datatable(differentiallyExpressed(),selection = 'single')
+    }
+  })
+  # if a gene is selected from the data table, select that gene in the expression window
+  observe({
+    if(!is.null(input$difGeneTable_rows_selected)){
+      gene = differentiallyExpressed()[input$difGeneTable_rows_selected,]$`Gene Symbol`
+      selectedGene = list_of_genesymbols[grepl(gene,list_of_genesymbols)]
+      updateSelectInput(session, 'input_genes', selected = selectedGene)
     }
   })
 
@@ -172,24 +190,7 @@ shinyServer(function(input, output, session) {
     gene_of_interest <- parse_gene_input(input$input_genes[1])
     gene_name <- parse_gene_input(input$input_genes[1], get="name")
 
-    ## Pull out gene expression of gene of interest
-    gene_expr <-
-      data.frame(
-        barcode = barcodes$Barcode,
-        expr = expression[gene_of_interest,]) %>%
-      tbl_df()
-    ## Join with tSNE
-    tsne1 <-
-      left_join(tsne, gene_expr, by="barcode")
-    ## Plot
-    input_midplot <- 1
-    tsne1 %>%
-      ggplot(aes(x=tSNE_1, y=tSNE_2, color=expr)) +
-      geom_point(alpha=1, size=.5) +
-      scale_colour_gradient2(low="grey44", high="red", mid="grey99", midpoint=input_midplot) +
-      theme_classic() +
-      ggtitle(gene_name)
-    ggplotly()
+    plot_geneExpr(gene_of_interest, gene_name, input_midplot=1)
   })
 
 
