@@ -65,6 +65,7 @@ shinyServer(function(input, output, session) {
   hide(id="div_select_two")
   hide(id="comparisonOutput")
   hide(id = 'downloadDifGenes')
+  hide(id="reload")
   })
 
   #render second selection plot when first population locked-in
@@ -88,7 +89,8 @@ shinyServer(function(input, output, session) {
     html(id = "select_text", "Loading...")
     disable(id = "pop_two_selected")
     show('comparisonOutput')
-    })
+    show("reload")
+  })
 
 
   #output$newPlot <- renderPlotly({
@@ -134,7 +136,7 @@ shinyServer(function(input, output, session) {
       }
   })
 
-  
+
   output$difGeneTable = renderDataTable({
     if(!is.null(differentiallyExpressed())){
       differentiallyExpressed()
@@ -165,24 +167,7 @@ shinyServer(function(input, output, session) {
     gene_of_interest <- parse_gene_input(input$input_genes[1])
     gene_name <- parse_gene_input(input$input_genes[1], get="name")
 
-    ## Pull out gene expression of gene of interest
-    gene_expr <-
-      data.frame(
-        barcode = barcodes$Barcode,
-        expr = expression[gene_of_interest,]) %>%
-      tbl_df()
-    ## Join with tSNE
-    tsne1 <-
-      left_join(tsne, gene_expr, by="barcode")
-    ## Plot
-    input_midplot <- 1
-    tsne1 %>%
-      ggplot(aes(x=tSNE_1, y=tSNE_2, color=expr)) +
-      geom_point(alpha=1, size=.5) +
-      scale_colour_gradient2(low="grey44", high="red", mid="grey99", midpoint=input_midplot) +
-      theme_classic() +
-      ggtitle(gene_name)
-    ggplotly()
+    plot_geneExpr(gene_of_interest, gene_name, input_midplot=1)
   })
 
 

@@ -30,11 +30,20 @@ shinyUI(fluidPage(
                         )),
                # panel for displaying individual gene expression data
                tabPanel('geneExpr',
-                        column(4, wellPanel(selectizeInput('input_genes', 'Select genes',
+                        column(4, wellPanel(selectizeInput('input_genes', h1('Select genes'),
                                                            choices = list_of_genesymbols,
                                                            options = list(maxItems = 4),
                                                            selected = c('CD8A_ENSG00000153563'),
-                                                           multiple = TRUE))),
+                                                           multiple = TRUE),
+                                            checkboxGroupInput("checkVisualization",
+                                                          label = h3("Visualizations"),
+                                                          choices = list("tSNE gene expression heatmap" = 1,
+                                                          "Histograms" = 2),
+                                                           selected = 1),
+                                            sliderInput("Min", "", min = 0, max = round(max(expression)), value = 0),
+                                            sliderInput("Midpoint", "", min = 0, max = round(max(expression)), value = 10),
+                                            sliderInput("Max", "", min = 0, max = round(max(expression)), value = 52))
+                               ),
                         column(8, plotlyOutput('geneExprPlot'))
                ),
                # exploration of selection
@@ -44,14 +53,14 @@ shinyUI(fluidPage(
                                              actionButton(inputId = "pop_one_selected", label = "Save group one"),
                                              actionButton(inputId = "pop_two_selected", label = "Save group two"),
                                              br(),
-                                             downloadButton(outputId = 'downloadDifGenes', label = 'Download'))
-
-                         ),
+                                             actionButton(inputId = "reload", label = "Select new groups")),
+                                             downloadButton(outputId = 'downloadDifGenes', label = 'Download')),
                          column(8,
                          div(id= "div_select_one", plotlyOutput('tSNE_select_one')),
                          div(id = "div_select_two", plotlyOutput('tSNE_select_two')),
                          div(id= 'comparisonOutput', dataTableOutput('difGeneTable'))
                          ))
                )
-  ))
+  )
+)
 
