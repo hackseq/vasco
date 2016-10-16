@@ -131,7 +131,8 @@ shinyServer(function(input, output, session) {
             tsneSubset = tsne[tsne$tSNE_1 %in% selected_data_two()$x & tsne$tSNE_2 %in% selected_data_two()$y,]
             barcodes$Barcode %in% tsneSubset$barcode
           } else {
-            !selected_vector1()
+            # if nothing is selected, select the negative set based on tsne
+            barcodes$Barcode %in% tsne$barcode[!tsne$barcode %in% barcodes$Barcode[selected_vector1()]]
           }
         })
       }
@@ -206,8 +207,14 @@ shinyServer(function(input, output, session) {
   })
 
   # plotting selected genes ----------
+  geneExpr_genes <- reactive({
+    # Take a dependency on input$goButton
+    input$exprGeneButton
+
+    isolate(input$input_genes)
+    })
   output$geneExprPlot <- renderUI({
-    plot_output_list <- lapply(1:length(input$input_genes), function(i) {
+    plot_output_list <- lapply(1:length(geneExpr_genes()), function(i) {
       plotname <- paste("plot", i, sep="")
       plotlyOutput(plotname)
     })
@@ -227,9 +234,9 @@ shinyServer(function(input, output, session) {
       plotname <- paste("plot", my_i, sep="")
 
       output[[plotname]] <- renderPlotly({
-        gene_of_interest <- parse_gene_input(input$input_genes[my_i])
-        gene_name <- parse_gene_input(input$input_genes[my_i], get="name")
-        plot_geneExpr(gene_of_interest, gene_name, input_midplot=1)
+        gene_of_interest <- parse_gene_input(geneExpr_genes()[my_i])
+        gene_name <- parse_gene_input(geneExpr_genes()[my_i], get="name")
+        plot_geneExpr(gene_of_interest, gene_name, input_midplot=input$Midpoint)
       })
     })
   }
