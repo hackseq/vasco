@@ -21,6 +21,12 @@ source('difGenes.R')
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
+  
+  #check if came from previous compare tab
+  query_vals <- reactive({session$clientData$url_search
+                                })
+  
+  observe({if ('?compare' ==query_vals()){updateTabsetPanel(session, inputId = 'main_panel', 'Compare') }})
 
   # debugging output, modify at will -----
   output$debug <- renderPrint({
@@ -65,6 +71,13 @@ shinyServer(function(input, output, session) {
   hide(id="div_select_two")
   hide(id="comparisonOutput")
   hide(id="reload")
+  })
+  
+
+  #if select new groups button is pressed reload page on this tab
+  observeEvent(input$reload, {
+    print("hello worlddd")
+    js$refresh()
   })
 
   #render second selection plot when first population locked-in
