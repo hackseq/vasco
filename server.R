@@ -40,13 +40,14 @@ shinyServer(function(input, output, session) {
   selected_vector1 = reactive({
     barcodes$Barcode %in% selected_data()$key
   })
-  selected_vector2 = reactive({!selected_vector1})
+  selected_vector2 = reactive({!selected_vector1()})
   
   
   differentiallyExpressed = reactive({
     print('should I calculate dif genes?')
     if(!is.null(selected_data())){
       print('yeah I guess')
+      browser()
       difGenes(group1 = selected_vector1(), 
                group2 = selected_vector2())
     }
