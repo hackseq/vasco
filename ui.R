@@ -44,7 +44,7 @@ shinyUI(
                                                           "Histograms" = 2),
                                                            selected = 1))
                                ),
-                        column(8, uiOutput("plots"), plotlyOutput('geneExprPlot'))
+                        column(8, uiOutput("geneExprPlot"))
                ),
                # exploration of selection
                tabPanel( 'Compare',

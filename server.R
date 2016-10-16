@@ -187,19 +187,10 @@ shinyServer(function(input, output, session) {
   })
 
   # plotting selected genes ----------
-  output$geneExprPlot <- renderPlotly({
-    #input_gene <- "CD8A"
-    #gene_of_interest <- filter(genes, Symbol==input_gene)$ID
-    gene_of_interest <- parse_gene_input(input$input_genes[1])
-    gene_name <- parse_gene_input(input$input_genes[1], get="name")
-
-    plot_geneExpr(gene_of_interest, gene_name, input_midplot=1)
-  })
-
-  output$plots <- renderUI({
+  output$geneExprPlot <- renderUI({
     plot_output_list <- lapply(1:length(input$input_genes), function(i) {
       plotname <- paste("plot", i, sep="")
-      plotlyOutput(plotname, height = 280, width = 250)
+      plotlyOutput(plotname)
     })
     # Convert the list to a tagList - this is necessary for the list of items
     # to display properly.
@@ -215,7 +206,6 @@ shinyServer(function(input, output, session) {
     local({
       my_i <- i
       plotname <- paste("plot", my_i, sep="")
-      output$debug <- renderPrint({i})
 
       output[[plotname]] <- renderPlotly({
         gene_of_interest <- parse_gene_input(input$input_genes[my_i])
