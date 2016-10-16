@@ -39,10 +39,7 @@ shinyUI(fluidPage(
                                                           label = h3("Visualizations"),
                                                           choices = list("tSNE gene expression heatmap" = 1,
                                                           "Histograms" = 2),
-                                                           selected = 1),
-                                            sliderInput("Min", "", min = 0, max = round(max(expression)), value = 0),
-                                            sliderInput("Midpoint", "", min = 0, max = round(max(expression)), value = 10),
-                                            sliderInput("Max", "", min = 0, max = round(max(expression)), value = 52))
+                                                           selected = 1))
                                ),
                         column(8, plotlyOutput('geneExprPlot'))
                ),
