@@ -16,25 +16,24 @@ shinyUI(fluidPage(
   # Application title
   titlePanel("Single cell vis"),
   tabsetPanel( id = "main_panel",
-    tabPanel('tSNE',
-             fluidRow(column(4,wellPanel( actionButton(inputId = "plot_selected", label = "plot selected"))),
-                      column(8,
-                             plotlyOutput('tSNEPlot'),
-                             plotlyOutput('countPerCluster'))
-                      )),
-    tabPanel('geneExpr', 
-             column(4, wellPanel(selectizeInput('input_genes', 'Select genes',
-                                                            choices = list_of_genesymbols,
-                                                            options = list(maxItems = 4),
-                                                            selected = c('CD8A_ENSG00000153563'),
-                                                            multiple = TRUE))),
-             column(8, plotlyOutput('geneExprPlot'))
-             ),
-    tabPanel(''),
-    tabPanel( 'Explore',
-                            inputId= 'Explore',
-                           fluidRow(column(8,plotlyOutput('newPlot'))
-    )
-  ) 
-))
+               tabPanel('tSNE',
+                        fluidRow(column(4,wellPanel( actionButton(inputId = "plot_selected", label = "plot selected"))),
+                                 column(8,
+                                        plotlyOutput('tSNEPlot'),
+                                        plotlyOutput('countPerCluster'))
+                        )),
+               tabPanel('geneExpr', 
+                        column(4, wellPanel(selectizeInput('input_genes', 'Select genes',
+                                                           choices = list_of_genesymbols,
+                                                           options = list(maxItems = 4),
+                                                           selected = c('CD8A_ENSG00000153563'),
+                                                           multiple = TRUE))),
+                        column(8, plotlyOutput('geneExprPlot'))
+               ),
+               tabPanel( 'Explore',
+                         inputId= 'Explore',
+                         fluidRow(column(8,plotlyOutput('newPlot'))
+                         )
+               ) 
+  ))
 )

@@ -25,14 +25,14 @@ shinyServer(function(input, output, session) {
     # size of the bins depend on the input 'bins'
     plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode) %>%
       layout(dragmode = "select")
-
+    
   })
   selected_data <- reactive({event_data("plotly_selected")})
   
   selected_vector = reactive({
     barcodes$Barcode %in% selected_data()$key
   })
-
+  
   output$debug <- renderPrint({ differentiallyExpressed()
   })
   
@@ -49,8 +49,8 @@ shinyServer(function(input, output, session) {
     plot_ly(NumCells, x=~Var1, y=~Freq, color=~Var1, type='bar') %>%
       layout(xaxis = ax)
   })
-
-
+  
+  
   differentiallyExpressed = reactive({
     print('should I calculate dif genes?')
     if(!is.null(selected_data())){
@@ -88,23 +88,23 @@ shinyServer(function(input, output, session) {
   
   selected_to_plot <- eventReactive(input$plot_selected,{
     
-         event_data("plotly_selected")
-     
-       })
+    event_data("plotly_selected")
+    
+  })
   
   ## Pull out gene expression of gene of interest
   
   
   observeEvent(input$plot_selected, {
-        updateTabsetPanel(session, "main_panel", selected = "Explore")
-     
-       })
+    updateTabsetPanel(session, "main_panel", selected = "Explore")
+    
+  })
   
   output$newPlot <- renderPlotly({
-       
-        new_tsne <- selected_to_plot()
-         plot_ly(new_tsne, x = ~x, y = ~y, text = ~key) %>%
-            layout(dragmode = "select")})
+    
+    new_tsne <- selected_to_plot()
+    plot_ly(new_tsne, x = ~x, y = ~y, text = ~key) %>%
+      layout(dragmode = "select")})
   
   
 })

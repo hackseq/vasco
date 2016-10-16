@@ -24,7 +24,7 @@ normalizeExpresion = function(v) {
     m<-m/sd(m)
     return(m)
   }) %>% t
-
+  
 }
 
 expression = normalizeExpresion(expression)
