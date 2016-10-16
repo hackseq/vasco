@@ -58,6 +58,10 @@ shinyServer(function(input, output, session) {
   #hide button one and two on load
   hide(id="pop_one_selected")
   hide(id="pop_two_selected")
+  #hide second plot on load
+  hide(id="div_select_two")
+  
+  
   
   #render second selection plot
   output$tSNE_select_two <- renderPlotly({
@@ -70,6 +74,14 @@ shinyServer(function(input, output, session) {
   observeEvent(input$pop_one_selected, {
     html(id = "select_text", "Please select second population")
     disable(id = "pop_one_selected")
+    hide(id="div_select_one")
+    show(id= "div_select_two")
+    
+  })
+  
+  observeEvent(input$pop_two_selected, {
+    html(id = "select_text", "")
+    disable(id = "pop_two_selected")
   })
   
   #output$newPlot <- renderPlotly({
