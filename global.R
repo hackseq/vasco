@@ -43,4 +43,22 @@ parse_gene_input <- function(x, get="id"){
   }
 }
 
-
+#' Draw geneExpr scatterplot
+plot_geneExpr <- function(gene_of_interest, gene_name, input_midplot=1){
+  gene_expr <-
+    data.frame(
+      barcode = barcodes$Barcode,
+      expr = expression[gene_of_interest,]) %>%
+    tbl_df()
+  ## Join with tSNE
+  tsne1 <-
+    left_join(tsne, gene_expr, by="barcode")
+  ## Plot
+  tsne1 %>%
+    ggplot(aes(x=tSNE_1, y=tSNE_2, color=expr)) +
+    geom_point(alpha=1, size=.5) +
+    scale_colour_gradient2(low="grey44", high="red", mid="grey99", midpoint=input_midplot) +
+    theme_classic() +
+    ggtitle(gene_name)
+  ggplotly()
+}
