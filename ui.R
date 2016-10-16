@@ -12,16 +12,21 @@ library(plotly)
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
+  # debug output change it at will
   verbatimTextOutput("debug"),
   # Application title
   titlePanel("Single cell vis"),
   tabsetPanel( id = "main_panel",
+               # main panel for tSNE plot and group selection
                tabPanel('tSNE',
+                        # selected button!!
                         fluidRow(column(4,wellPanel( actionButton(inputId = "plot_selected", label = "plot selected"))),
+                                 # main window plots
                                  column(8,
                                         plotlyOutput('tSNEPlot'),
                                         plotlyOutput('countPerCluster'))
                         )),
+               # panel for displaying individual gene expression data
                tabPanel('geneExpr', 
                         column(4, wellPanel(selectizeInput('input_genes', 'Select genes',
                                                            choices = list_of_genesymbols,
@@ -30,6 +35,7 @@ shinyUI(fluidPage(
                                                            multiple = TRUE))),
                         column(8, plotlyOutput('geneExprPlot'))
                ),
+               # exploration of selection
                tabPanel( 'Explore',
                          inputId= 'Explore',
                          fluidRow(column(8,plotlyOutput('newPlot'))

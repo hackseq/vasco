@@ -21,21 +21,50 @@ source('difGenes.R')
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
+  
+  # debugging output, modify at will -----
+  output$debug <- renderPrint({ differentiallyExpressed()
+  })
+  
+  # main SNE plot ---------
   output$tSNEPlot <- renderPlotly({
     # size of the bins depend on the input 'bins'
     plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode) %>%
       layout(dragmode = "select")
     
   })
+  
+  # selection code and differential expression ------
   selected_data <- reactive({event_data("plotly_selected")})
   
   selected_vector = reactive({
     barcodes$Barcode %in% selected_data()$key
   })
   
-  output$debug <- renderPrint({ differentiallyExpressed()
+  differentiallyExpressed = reactive({
+    print('should I calculate dif genes?')
+    if(!is.null(selected_data())){
+      print('yeah I guess')
+      difGenes(group1 = selected_vector(), 
+               group2 = !selected_vector())
+    }
+  })
+
+  # alternative plotting window after selection ------
+  observeEvent(input$plot_selected, {
+    updateTabsetPanel(session, "main_panel", selected = "Explore")
+    
   })
   
+  output$newPlot <- renderPlotly({
+    
+    new_tsne <- selected_to_plot()
+    plot_ly(new_tsne, x = ~x, y = ~y, text = ~key) %>%
+      layout(dragmode = "select")})
+  
+
+  
+  # histogram of cells -----------
   output$countPerCluster <- renderPlotly({
     ax <- list(
       title = "",
@@ -50,16 +79,7 @@ shinyServer(function(input, output, session) {
       layout(xaxis = ax)
   })
   
-  
-  differentiallyExpressed = reactive({
-    print('should I calculate dif genes?')
-    if(!is.null(selected_data())){
-      print('yeah I guess')
-      difGenes(group1 = selected_vector(), 
-               group2 = !selected_vector())
-    }
-  })
-  
+  # plotting selected genes ----------
   output$geneExprPlot <- renderPlotly({
     #input_gene <- "CD8A"
     #gene_of_interest <- filter(genes, Symbol==input_gene)$ID
@@ -91,21 +111,6 @@ shinyServer(function(input, output, session) {
     event_data("plotly_selected")
     
   })
-  
-  ## Pull out gene expression of gene of interest
-  
-  
-  observeEvent(input$plot_selected, {
-    updateTabsetPanel(session, "main_panel", selected = "Explore")
-    
-  })
-  
-  output$newPlot <- renderPlotly({
-    
-    new_tsne <- selected_to_plot()
-    plot_ly(new_tsne, x = ~x, y = ~y, text = ~key) %>%
-      layout(dragmode = "select")})
-  
   
 })
 
