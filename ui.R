@@ -14,6 +14,7 @@ library(plotly)
 shinyUI(fluidPage(
   # debug output change it at will
   verbatimTextOutput("debug"),
+  plotlyOutput('debugPlot'),
   # Application title
   titlePanel("Single cell vis"),
   tabsetPanel( id = "main_panel",
