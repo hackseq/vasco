@@ -64,6 +64,7 @@ shinyServer(function(input, output, session) {
   #hide second plot on load
   hide(id="div_select_two")
   hide(id="comparisonOutput")
+  hide(id="reload")
   })
 
   #render second selection plot when first population locked-in
@@ -87,6 +88,7 @@ shinyServer(function(input, output, session) {
     html(id = "select_text", "Loading...")
     disable(id = "pop_two_selected")
     show('comparisonOutput')
+    show("reload")
   })
 
 

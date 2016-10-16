@@ -42,7 +42,8 @@ shinyUI(fluidPage(
                          inputId= 'Explore',
                          column(4,wellPanel( h4(id = "select_text", "Please select first population"),
                                              actionButton(inputId = "pop_one_selected", label = "Save group one"),
-                                             actionButton(inputId = "pop_two_selected", label = "Save group two"))
+                                             actionButton(inputId = "pop_two_selected", label = "Save group two"),
+                                             actionButton(inputId = "reload", label = "Select new groups"))
 
                          ),
                          div(id= "div_select_one", column(8,plotlyOutput('tSNE_select_one'))),
