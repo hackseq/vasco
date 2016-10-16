@@ -109,7 +109,6 @@ shinyServer(function(input, output, session) {
     {
       hide('div_select_two')
       if(input$pop_two_selected == 1){
-        browser()
         isolate({
           if(!is.null(selected_data_two())){
             tsneSubset = tsne[tsne$tSNE_1 %in% selected_data_two()$x & tsne$tSNE_2 %in% selected_data_two()$y,]
