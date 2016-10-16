@@ -42,13 +42,16 @@ shinyUI(fluidPage(
                          inputId= 'Explore',
                          column(4,wellPanel( h4(id = "select_text", "Please select first population"),
                                              actionButton(inputId = "pop_one_selected", label = "Save group one"),
-                                             actionButton(inputId = "pop_two_selected", label = "Save group two"))
+                                             actionButton(inputId = "pop_two_selected", label = "Save group two"),
+                                             br(),
+                                             downloadButton(outputId = 'downloadDifGenes', label = 'Download'))
 
                          ),
-                         div(id= "div_select_one", column(8,plotlyOutput('tSNE_select_one'))),
-                         div(id = "div_select_two", column(8,plotlyOutput('tSNE_select_two'))),
+                         column(8,
+                         div(id= "div_select_one", plotlyOutput('tSNE_select_one')),
+                         div(id = "div_select_two", plotlyOutput('tSNE_select_two')),
                          div(id= 'comparisonOutput', dataTableOutput('difGeneTable'))
-                         )
+                         ))
                )
   ))
 

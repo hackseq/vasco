@@ -64,6 +64,7 @@ shinyServer(function(input, output, session) {
   #hide second plot on load
   hide(id="div_select_two")
   hide(id="comparisonOutput")
+  hide(id = 'downloadDifGenes')
   })
 
   #render second selection plot when first population locked-in
@@ -87,7 +88,7 @@ shinyServer(function(input, output, session) {
     html(id = "select_text", "Loading...")
     disable(id = "pop_two_selected")
     show('comparisonOutput')
-  })
+    })
 
 
   #output$newPlot <- renderPlotly({
@@ -115,12 +116,19 @@ shinyServer(function(input, output, session) {
       }
     }
   )
+  
+  output$downloadDifGenes = downloadHandler(
+    filename = 'difGenes.tsv',
+    content = function(file) {
+      write_tsv(differentiallyExpressed(), file)
+    })
 
 
   differentiallyExpressed = reactive({
     print('should I calculate dif genes?')
       print('yeah I guess')
       if(!is.null(selected_vector2()) & !is.null(selected_vector1())){
+        show('downloadDifGenes')
         difGenes(group1 = isolate(selected_vector1()),
                  group2 = selected_vector2())
       }
