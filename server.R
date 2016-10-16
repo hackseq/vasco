@@ -47,8 +47,8 @@ shinyServer(function(input, output, session) {
     print('should I calculate dif genes?')
     if(!is.null(selected_data())){
       print('yeah I guess')
-      difGenes(group1 = selected_vector(), 
-               group2 = !selected_vector())
+      difGenes(group1 = selected_vector1(), 
+               group2 = selected_vector2())
     }
   })
 
