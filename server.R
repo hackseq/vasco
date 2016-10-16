@@ -46,11 +46,12 @@ shinyServer(function(input, output, session) {
   selected_data <- reactive({event_data("plotly_selected", source = "selection_plot_one")})
   selected_data_two <- reactive({event_data("plotly_selected", source = "selection_plot_two")})
   
-  
+  #shows the button when first population selected in plot
   observeEvent(selected_data(),{
     show("pop_one_selected")
   })
   
+  #shows the button when second population selected in plot
   observeEvent(selected_data_two(),{
     show("pop_two_selected")
   })
@@ -61,16 +62,14 @@ shinyServer(function(input, output, session) {
   #hide second plot on load
   hide(id="div_select_two")
   
-  
-  
-  #render second selection plot
+  #render second selection plot when first population locked-in
   output$tSNE_select_two <- renderPlotly({
     input$pop_one_selected
     isolate( plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode, source = "selection_plot_two") %>%
       layout(dragmode = "select") )
   })
   
-  # alternative plotting window after selection ------
+  # when button one is clicked, update ui and assign cell population to var
   observeEvent(input$pop_one_selected, {
     html(id = "select_text", "Please select second population")
     disable(id = "pop_one_selected")
@@ -79,6 +78,7 @@ shinyServer(function(input, output, session) {
     
   })
   
+  # when button two is clicked, update ui and assign cell population to var
   observeEvent(input$pop_two_selected, {
     html(id = "select_text", "")
     disable(id = "pop_two_selected")
@@ -91,10 +91,16 @@ shinyServer(function(input, output, session) {
      # layout(dragmode = "select")})
   
   
-  selected_vector1 = reactive({
-    barcodes$Barcode %in% selected_data()$key
-  })
-  selected_vector2 = reactive({!selected_vector1()})
+  selected_vector1 = reactive(
+    {input$pop_one_selected
+      isolate(
+        barcodes$Barcode %in% selected_data()$key
+      )})
+  selected_vector2 = reactive(
+    { input$pop_two_selected
+      isolate(!selected_vector1())
+    }
+  )
   
   
   differentiallyExpressed = reactive({
