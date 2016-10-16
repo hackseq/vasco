@@ -42,7 +42,10 @@ shinyUI(
                                                           label = h3("Visualizations"),
                                                           choices = list("tSNE gene expression heatmap" = 1,
                                                           "Histograms" = 2),
-                                                           selected = 1))
+                                                           selected = 1),
+                                            numericInput("Midpoint", label = h3("Midpoint"), value = 1)
+                                          ),
+                               actionButton("exprGeneButton", "Plot expression data")
                                ),
                         column(8, uiOutput("geneExprPlot"))
                ),
