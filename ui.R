@@ -45,7 +45,7 @@ shinyUI(
                                                            selected = 1),
                                             numericInput("Midpoint", label = h3("Midpoint"), value = 1)
                                           ),
-                               submitButton("Submit")
+                               actionButton("exprGeneButton", "Plot expression data")
                                ),
                         column(8, uiOutput("geneExprPlot"))
                ),
