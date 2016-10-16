@@ -59,8 +59,8 @@ shinyServer(function(input, output, session) {
   })
   
   output$newPlot <- renderPlotly({
-    
-    new_tsne <- selected_to_plot()
+    input$plot_selected
+    new_tsne <- isolate(selected_data())
     plot_ly(new_tsne, x = ~x, y = ~y, text = ~key) %>%
       layout(dragmode = "select")})
   
@@ -108,11 +108,6 @@ shinyServer(function(input, output, session) {
     ggplotly()
   })
   
-  selected_to_plot <- eventReactive(input$plot_selected,{
-    
-    event_data("plotly_selected")
-    
-  })
   
 })
 
