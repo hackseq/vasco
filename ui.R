@@ -38,7 +38,7 @@ shinyUI(fluidPage(
                # exploration of selection
                tabPanel( 'Compare',
                          inputId= 'Explore',
-                         column(8,plotlyOutput('newPlot')),
+                         column(8,plotlyOutput('tSNE_select')),
                          column(4,wellPanel( actionButton(inputId = "plot_selected", label = "plot selected")))
                          )
                ) 
