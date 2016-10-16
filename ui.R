@@ -8,10 +8,12 @@
 #
 
 library(shiny)
+library(shinyjs)
 library(plotly)
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
+  useShinyjs(),
   # debug output change it at will
   verbatimTextOutput("debug"),
   plotlyOutput('debugPlot'),
@@ -40,7 +42,10 @@ shinyUI(fluidPage(
                tabPanel( 'Compare',
                          inputId= 'Explore',
                          column(8,plotlyOutput('tSNE_select')),
-                         column(4,wellPanel( actionButton(inputId = "plot_selected", label = "plot selected")))
+                         column(4,wellPanel( p("Please select first population"),
+                                             actionButton(inputId = "plot_one_selected", label = "plot selected"))
+                                            
+                                )
                          )
                ) 
   ))
