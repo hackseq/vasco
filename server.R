@@ -130,7 +130,8 @@ shinyServer(function(input, output, session) {
             tsneSubset = tsne[tsne$tSNE_1 %in% selected_data_two()$x & tsne$tSNE_2 %in% selected_data_two()$y,]
             barcodes$Barcode %in% tsneSubset$barcode
           } else {
-            !selected_vector1()
+            # if nothing is selected, select the negative set based on tsne
+            barcodes$Barcode %in% tsne$barcode[!tsne$barcode %in% barcodes$Barcode[selected_vector1()]]
           }
         })
       }
