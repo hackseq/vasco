@@ -11,9 +11,12 @@ library(shiny)
 library(shinyjs)
 library(plotly)
 
+
 # Define UI for application that draws a histogram
-shinyUI(fluidPage(
+shinyUI(
+  fluidPage(
   useShinyjs(),
+  extendShinyjs(text = "shinyjs.refresh = function() { redir_Str = window.location.href.split('?')[0] + '?compare'; window.location.href = redir_Str ; }"),
   # debug output change it at will
   verbatimTextOutput("debug"),
   # Application title
@@ -45,7 +48,7 @@ shinyUI(fluidPage(
                ),
                # exploration of selection
                tabPanel( 'Compare',
-                         inputId= 'Explore',
+                         id= 'Compare',
                          column(4,wellPanel( h4(id = "select_text", "Please select first population"),
                                              actionButton(inputId = "pop_one_selected", label = "Save group one"),
                                              actionButton(inputId = "pop_two_selected", label = "Save group two"),
