@@ -43,7 +43,8 @@ shinyUI(fluidPage(
                          inputId= 'Explore',
                          column(8,plotlyOutput('tSNE_select')),
                          column(4,wellPanel( p("Please select first population"),
-                                             actionButton(inputId = "plot_one_selected", label = "plot selected"))
+                                             actionButton(inputId = "plot_one_selected", label = "group one"),
+                                             actionButton(inputId = "plot_two_selected", label = "group two"))
                                             
                                 )
                          )
