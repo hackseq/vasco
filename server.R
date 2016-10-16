@@ -44,20 +44,32 @@ shinyServer(function(input, output, session) {
   
   # selection code and differential expression ------
   selected_data <- reactive({event_data("plotly_selected", source = "selection_plot_one")})
+  selected_data_two <- reactive({event_data("plotly_selected", source = "selection_plot_two")})
   
-  observeEvent(selected_data(),
-               {
+  
+  observeEvent(selected_data(),{
     show("pop_one_selected")
+  })
+  
+  observeEvent(selected_data_two(),{
+    show("pop_two_selected")
   })
   
   #hide button one and two on load
   hide(id="pop_one_selected")
   hide(id="pop_two_selected")
   
+  #render second selection plot
+  output$tSNE_select_two <- renderPlotly({
+    input$pop_one_selected
+    isolate( plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode, source = "selection_plot_two") %>%
+      layout(dragmode = "select") )
+  })
+  
   # alternative plotting window after selection ------
   observeEvent(input$pop_one_selected, {
-    updateTabsetPanel(session, "main_panel", selected = "Explore")
-    
+    html(id = "select_text", "Please select second population")
+    disable(id = "pop_one_selected")
   })
   
   #output$newPlot <- renderPlotly({
