@@ -23,7 +23,7 @@ source('difGenes.R')
 shinyServer(function(input, output, session) {
   
   # debugging output, modify at will -----
-  output$debug <- renderPrint({ differentiallyExpressed()
+  output$debug <- renderPrint({ #differentiallyExpressed()
   })
   
   # main SNE plot ---------
@@ -47,7 +47,6 @@ shinyServer(function(input, output, session) {
     print('should I calculate dif genes?')
     if(!is.null(selected_data())){
       print('yeah I guess')
-      browser()
       difGenes(group1 = selected_vector1(), 
                group2 = selected_vector2())
     }
