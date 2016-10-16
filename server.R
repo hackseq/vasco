@@ -149,7 +149,8 @@ shinyServer(function(input, output, session) {
     g1["group"] <- rep('group 1', dim(g1)[1])
     g2["group"] <- rep('group 2', dim(g2)[1])
     both_groups = rbind(g1, g2)
-    plot_ly(both_groups, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~group, key = ~barcode, source = "selection_plot_two") %>%
+    plot_ly(both_groups, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~group, colors = c("dark blue", "dark red"), 
+            key = ~barcode, source = "selection_plot_two") %>%
                layout(dragmode = "select",xaxis = list(range = c(-40,40)),
                       yaxis = list(range = c(-40,40)))
         
