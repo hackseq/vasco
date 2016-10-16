@@ -30,12 +30,21 @@ shinyUI(fluidPage(
                                         plotlyOutput('countPerCluster'))
                         )),
                # panel for displaying individual gene expression data
-               tabPanel('geneExpr', 
-                        column(4, wellPanel(selectizeInput('input_genes', 'Select genes',
+               tabPanel('geneExpr',
+                        column(4, wellPanel(selectizeInput('input_genes', h1('Select genes'),
                                                            choices = list_of_genesymbols,
                                                            options = list(maxItems = 4),
                                                            selected = c('CD8A_ENSG00000153563'),
-                                                           multiple = TRUE))),
+                                                           multiple = TRUE),
+                                            checkboxGroupInput("checkVisualization",
+                                                          label = h3("Visualizations"),
+                                                          choices = list("tSNE gene expression heatmap" = 1,
+                                                          "Histograms" = 2),
+                                                           selected = 1),
+                                            sliderInput("Min", "", min = 0, max = round(max(expression)), value = 0),
+                                            sliderInput("Midpoint", "", min = 0, max = round(max(expression)), value = 10),
+                                            sliderInput("Max", "", min = 0, max = round(max(expression)), value = 52))
+                               ),
                         column(8, plotlyOutput('geneExprPlot'))
                ),
                # exploration of selection
@@ -44,12 +53,12 @@ shinyUI(fluidPage(
                          column(4,wellPanel( h4(id = "select_text", "Please select first population"),
                                              actionButton(inputId = "pop_one_selected", label = "Save group one"),
                                              actionButton(inputId = "pop_two_selected", label = "Save group two"))
-                                
+
                          ),
                          div(id= "div_select_one", column(8,plotlyOutput('tSNE_select_one'))),
                          div(id = "div_select_two", column(8,plotlyOutput('tSNE_select_two')))
 
                          )
-               ) 
+               )
   ))
 
