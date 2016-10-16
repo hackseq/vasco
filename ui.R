@@ -20,7 +20,7 @@ shinyUI(fluidPage(
                # main panel for tSNE plot and group selection
                tabPanel('tSNE',
                         # selected button!!
-                        fluidRow(column(4,wellPanel( actionButton(inputId = "plot_selected", label = "plot selected"))),
+                        fluidRow(
                                  # main window plots
                                  column(8,
                                         plotlyOutput('tSNEPlot'),
@@ -36,10 +36,11 @@ shinyUI(fluidPage(
                         column(8, plotlyOutput('geneExprPlot'))
                ),
                # exploration of selection
-               tabPanel( 'Explore',
+               tabPanel( 'Compare',
                          inputId= 'Explore',
-                         fluidRow(column(8,plotlyOutput('newPlot'))
+                         column(8,plotlyOutput('newPlot')),
+                         column(4,wellPanel( actionButton(inputId = "plot_selected", label = "plot selected")))
                          )
                ) 
   ))
-)
+
