@@ -11,7 +11,8 @@ difGenes = function(group1,group2){
   difGeneOrder = order(fChange, decreasing = TRUE)
   data.frame(Gene.Symbol = genes$Symbol[difGeneOrder],
              difference = fChange[difGeneOrder],
-             group1Expression = group1Mean[difGeneOrder],
-             group2Expression = group2Mean[difGeneOrder])
+             "group1 Expression" = group1Mean[difGeneOrder],
+             "group2 Expression" = group2Mean[difGeneOrder],
+             check.names = FALSE)
 
 }
