@@ -95,6 +95,7 @@ shinyServer(function(input, output, session) {
     show(id= "div_select_two")
     show("pop_two_selected")
     hide(id="div_select_one")
+    
 
   })
 
@@ -136,6 +137,24 @@ shinyServer(function(input, output, session) {
       }
     }
   )
+  second_clicked <-reactive({input$pop_two_selected})
+  
+
+  
+  output$tSNE_summary <- renderPlotly({
+    second_clicked()
+    g1 = tsne[ tsne$barcode %in% barcodes$Barcode[isolate({selected_vector1()})],]
+    g2 = tsne[tsne$barcode %in% barcodes$Barcode[isolate({selected_vector2()})],]
+    g1["group"] <- rep.int(1, dim(g1)[1])
+    g2["group"] <- rep.int(2, dim(g2)[1])
+    both_groups = rbind(g1, g2)
+    plot_ly(both_groups, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~group, key = ~barcode, source = "selection_plot_two") %>%
+               layout(dragmode = "select",xaxis = list(range = c(-40,40)),
+                      yaxis = list(range = c(-40,40)))
+        
+    })
+    
+  
 
   output$downloadDifGenes = downloadHandler(
     filename = 'difGenes.tsv',

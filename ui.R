@@ -58,7 +58,7 @@ shinyUI(
                          column(8,
                          div(id= "div_select_one", plotlyOutput('tSNE_select_one')),
                          div(id = "div_select_two", plotlyOutput('tSNE_select_two')),
-                         div(id= 'comparisonOutput', dataTableOutput('difGeneTable'))
+                         div(id= 'comparisonOutput', dataTableOutput('difGeneTable'), plotlyOutput('tSNE_summary'))
                          ))
                )
   )
