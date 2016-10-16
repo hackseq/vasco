@@ -47,7 +47,7 @@ shinyUI(fluidPage(
                          ),
                          div(id= "div_select_one", column(8,plotlyOutput('tSNE_select_one'))),
                          div(id = "div_select_two", column(8,plotlyOutput('tSNE_select_two'))),
-                         div(id= 'comparisonOutput', column(8, plotlyOutput('difHeatmap')))
+                         div(id= 'comparisonOutput', dataTableOutput('difGeneTable'))
                          )
                )
   ))
