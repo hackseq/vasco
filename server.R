@@ -34,13 +34,27 @@ shinyServer(function(input, output, session) {
     
   })
   
-  # Select tSNE plot in Compare tab
+  # COMPARE TAB-------
   output$tSNE_select <- renderPlotly({
     # size of the bins depend on the input 'bins'
     plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode) %>%
       layout(dragmode = "select")
+  })
+  #hide button one and two on load
+  hide(id="plot_one_selected")
+  #hide(id="plot_one_selected")
+  
+  # alternative plotting window after selection ------
+  observeEvent(input$plot_selected, {
+    updateTabsetPanel(session, "main_panel", selected = "Explore")
     
   })
+  
+  output$newPlot <- renderPlotly({
+    input$plot_selected
+    new_tsne <- isolate(selected_data())
+    plot_ly(new_tsne, x = ~x, y = ~y, text = ~key) %>%
+      layout(dragmode = "select")})
   
   # selection code and differential expression ------
   selected_data <- reactive({event_data("plotly_selected")})
@@ -60,18 +74,6 @@ shinyServer(function(input, output, session) {
     }
   })
 
-  # alternative plotting window after selection ------
-  observeEvent(input$plot_selected, {
-    updateTabsetPanel(session, "main_panel", selected = "Explore")
-    
-  })
-  
-  output$newPlot <- renderPlotly({
-    input$plot_selected
-    new_tsne <- isolate(selected_data())
-    plot_ly(new_tsne, x = ~x, y = ~y, text = ~key) %>%
-      layout(dragmode = "select")})
-  
 
   
   # histogram of cells -----------
