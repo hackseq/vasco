@@ -35,7 +35,7 @@ shinyUI(
                tabPanel('geneExpr',
                         column(4, wellPanel(selectizeInput('input_genes', h1('Select genes'),
                                                            choices = list_of_genesymbols,
-                                                           options = list(maxItems = 4),
+                                                           options = list(maxItems = geneExpr_maxItems),
                                                            selected = c('CD8A_ENSG00000153563'),
                                                            multiple = TRUE),
                                             checkboxGroupInput("checkVisualization",
@@ -44,7 +44,7 @@ shinyUI(
                                                           "Histograms" = 2),
                                                            selected = 1))
                                ),
-                        column(8, plotlyOutput('geneExprPlot'))
+                        column(8, uiOutput("plots"), plotlyOutput('geneExprPlot'))
                ),
                # exploration of selection
                tabPanel( 'Compare',

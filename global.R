@@ -9,6 +9,7 @@ genes = read_tsv('Data/redstone_1_genes.tsv',col_names = c('ID','Symbol'))
 tsne = read_tsv('Data/redstone_pbmc3k_tdf', skip= 1, col_name = c('barcode','tSNE_1',	'tSNE_2','id' ))
 expression = readMM('Data/redstone_1_matrix.mtx')
 
+geneExpr_maxItems = 4
 rownames(expression) = genes$ID
 colnames(expression) = barcodes$Barcode
 
