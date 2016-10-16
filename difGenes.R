@@ -1,4 +1,4 @@
-difGenes = function(group1,group2, geneCount = 10){
+difGenes = function(group1,group2){
   group1 = expression[,group1]
   group2 = expression[,group2]
   
@@ -8,10 +8,10 @@ difGenes = function(group1,group2, geneCount = 10){
   fChange = group1Median - group2Median
   
   difGeneOrder = order(fChange, decreasing = TRUE)
-  data.frame(Gene.Symbol = genes$Symbol[difGeneOrder][1:geneCount],
-             difference = fChange[difGeneOrder][1:geneCount],
-             group1Expression = group1Median[difGeneOrder][1:geneCount],
-             group2Expression = group2Median[difGeneOrder][1:geneCount])
+  data.frame(Gene.Symbol = genes$Symbol[difGeneOrder],
+             difference = fChange[difGeneOrder],
+             group1Expression = group1Median[difGeneOrder],
+             group2Expression = group2Median[difGeneOrder])
   
   
 }
