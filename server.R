@@ -33,7 +33,21 @@ shinyServer(function(input, output, session) {
     barcodes$Barcode %in% selected_data()$key
   })
 
-  output$brush <- renderPrint({ differentiallyExpressed()
+  output$debug <- renderPrint({ differentiallyExpressed()
+  })
+  
+  output$countPerCluster <- renderPlotly({
+    ax <- list(
+      title = "",
+      zeroline = FALSE,
+      showline = FALSE,
+      showticklabels = FALSE,
+      showgrid = FALSE
+    )
+    NumCells<-table(tsne$id)
+    NumCells<-as.data.frame(NumCells)
+    plot_ly(NumCells, x=~Var1, y=~Freq, color=~Var1, type='bar') %>%
+      layout(xaxis = ax)
   })
 
 
@@ -46,11 +60,40 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  output$geneExprPlot <- renderPlotly({
+    #input_gene <- "CD8A"
+    #gene_of_interest <- filter(genes, Symbol==input_gene)$ID
+    gene_of_interest <- parse_gene_input(input$input_genes[1])
+    gene_name <- parse_gene_input(input$input_genes[1], get="name")
+    
+    ## Pull out gene expression of gene of interest
+    gene_expr <-
+      data.frame(
+        barcode = barcodes$Barcode,
+        expr = expression[gene_of_interest,]) %>%
+      tbl_df()
+    ## Join with tSNE
+    tsne1 <-
+      left_join(tsne, gene_expr, by="barcode")
+    ## Plot
+    input_midplot <- 1
+    tsne1 %>%
+      ggplot(aes(x=tSNE_1, y=tSNE_2, color=expr)) +
+      geom_point(alpha=1, size=.5) +
+      scale_colour_gradient2(low="grey44", high="red", mid="grey99", midpoint=input_midplot) +
+      theme_classic() +
+      ggtitle(gene_name)
+    ggplotly()
+  })
+  
   selected_to_plot <- eventReactive(input$plot_selected,{
     
          event_data("plotly_selected")
      
        })
+  
+  ## Pull out gene expression of gene of interest
+  
   
   observeEvent(input$plot_selected, {
         updateTabsetPanel(session, "main_panel", selected = "Explore")
