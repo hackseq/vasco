@@ -11,7 +11,7 @@ tsne = read_tsv('Data/redstone_pbmc3k_tdf', skip= 1, col_name = c('barcode','tSN
 expression = readMM('Data/redstone_1_matrix.mtx')
 
 rownames(expression) = genes$ID
-
+colnames(expression) = barcodes$Barcode
 
 rowMax = expression %>% apply(1,max)
 expression = expression[rowMax>0,]
