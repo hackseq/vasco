@@ -36,49 +36,89 @@ shinyServer(function(input, output, session) {
   })
   
   # COMPARE TAB-------
-  output$tSNE_select <- renderPlotly({
+  #render initial seleciton plot
+  output$tSNE_select_one <- renderPlotly({
     # size of the bins depend on the input 'bins'
-    plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode) %>%
+    plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode, source = "selection_plot_one") %>%
       layout(dragmode = "select")
   })
-  #hide button one and two on load
-  hide(id="plot_one_selected")
-  #hide(id="plot_one_selected")
   
-  # alternative plotting window after selection ------
-  observeEvent(input$plot_selected, {
-    updateTabsetPanel(session, "main_panel", selected = "Explore")
+  # selection code and differential expression ------
+  selected_data <- reactive({event_data("plotly_selected", source = "selection_plot_one")})
+  selected_data_two <- reactive({event_data("plotly_selected", source = "selection_plot_two")})
+  
+  #shows the button when first population selected in plot
+  observeEvent(selected_data(),{
+    show("pop_one_selected")
+  })
+  
+  #shows the button when second population selected in plot
+  observeEvent(selected_data_two(),{
+    show("pop_two_selected")
+  })
+  
+  #hide button one and two on load
+  hide(id="pop_one_selected")
+  hide(id="pop_two_selected")
+  #hide second plot on load
+  hide(id="div_select_two")
+  
+  #render second selection plot when first population locked-in
+  output$tSNE_select_two <- renderPlotly({
+    input$pop_one_selected
+    isolate( plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode, source = "selection_plot_two") %>%
+      layout(dragmode = "select") )
+  })
+  
+  # when button one is clicked, update ui and assign cell population to var
+  observeEvent(input$pop_one_selected, {
+    html(id = "select_text", "Please select second population")
+    disable(id = "pop_one_selected")
+    hide(id="div_select_one")
+    show(id= "div_select_two")
     
   })
   
-  output$newPlot <- renderPlotly({
-    input$plot_selected
-    new_tsne <- isolate(selected_data())
-    plot_ly(new_tsne, x = ~x, y = ~y, text = ~key) %>%
-      layout(dragmode = "select")})
-  
-  # selection code and differential expression ------
-  selected_data <- reactive({event_data("plotly_selected",source = 'hede')})
-  
-  selected_vector1 = reactive({
-    tsneSubset = tsne[tsne$tSNE_1 %in% selected_data()$x & tsne$tSNE_2 %in% selected_data()$y,]
-    print(table(tsneSubset$id))
-    barcodes$Barcode %in% tsneSubset$barcode
+  # when button two is clicked, update ui and assign cell population to var
+  observeEvent(input$pop_two_selected, {
+    html(id = "select_text", "")
+    disable(id = "pop_two_selected")
   })
-  selected_vector2 = reactive({!selected_vector1()})
   
+
+  #output$newPlot <- renderPlotly({
+   # input$pop_selected
+    #new_tsne <- isolate(selected_data())
+    #plot_ly(new_tsne, x = ~x, y = ~y, text = ~key) %>%
+     # layout(dragmode = "select")})
+  
+  
+  selected_vector1 = reactive(
+    {input$pop_one_selected
+      isolate({
+        tsneSubset = tsne[tsne$tSNE_1 %in% selected_data()$x & tsne$tSNE_2 %in% selected_data()$y,]
+        barcodes$Barcode %in% tsneSubset$barcode
+      })})
+  
+  selected_vector2 = reactive(
+    { 
+      if(input$pop_two_selected == 1){
+        isolate(!selected_vector1())
+      }
+    }
+  )
+
   
   differentiallyExpressed = reactive({
     print('should I calculate dif genes?')
-    if(!is.null(selected_data())){
       print('yeah I guess')
-      difGenes(group1 = selected_vector1(), 
-               group2 = selected_vector2())
-    }
+      if(!is.null(selected_vector2()) & !is.null(selected_vector1())){
+        difGenes(group1 = isolate(selected_vector1()), 
+                 group2 = selected_vector2())
+      }
   })
   
-  #observe({ write_tsv(differentiallyExpressed(), 'hede.tsv')})
-  
+
   # dif genes heatmap
   output$difHeatmap = renderPlotly({
     print('rendering heatmap')

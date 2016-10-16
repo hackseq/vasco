@@ -16,6 +16,7 @@ shinyUI(fluidPage(
   useShinyjs(),
   # debug output change it at will
   verbatimTextOutput("debug"),
+  plotlyOutput('difHeatmap'),
   # Application title
   titlePanel("Single cell vis"),
   tabsetPanel( id = "main_panel",
@@ -40,9 +41,11 @@ shinyUI(fluidPage(
                # exploration of selection
                tabPanel( 'Compare',
                          inputId= 'Explore',
-                         column(8,plotlyOutput('tSNE_select')),
-                         column(4,wellPanel( p("Please select first population"),
-                                             actionButton(inputId = "plot_one_selected", label = "plot selected"))
+                         div(id= "div_select_one", column(8,plotlyOutput('tSNE_select_one'))),
+                         div(id = "div_select_two", column(8,plotlyOutput('tSNE_select_two'))),
+                         column(4,wellPanel( p(id = "select_text", "Please select first population"),
+                                             actionButton(inputId = "pop_one_selected", label = "group one"),
+                                             actionButton(inputId = "pop_two_selected", label = "group two"))
                                             
                                 )
                          )
