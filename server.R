@@ -37,9 +37,11 @@ shinyServer(function(input, output, session) {
   # selection code and differential expression ------
   selected_data <- reactive({event_data("plotly_selected")})
   
-  selected_vector = reactive({
+  selected_vector1 = reactive({
     barcodes$Barcode %in% selected_data()$key
   })
+  selected_vector2 = reactive({!selected_vector1})
+  
   
   differentiallyExpressed = reactive({
     print('should I calculate dif genes?')
