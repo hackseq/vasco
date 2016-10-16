@@ -188,11 +188,13 @@ shinyServer(function(input, output, session) {
   })
 
   # plotting selected genes ----------
-  geneExpr_genes <- reactive({ isolate(input$input_genes) })
-  output$geneExprPlot <- renderUI({
+  geneExpr_genes <- reactive({
     # Take a dependency on input$goButton
     input$exprGeneButton
 
+    isolate(input$input_genes)
+    })
+  output$geneExprPlot <- renderUI({
     plot_output_list <- lapply(1:length(geneExpr_genes()), function(i) {
       plotname <- paste("plot", i, sep="")
       plotlyOutput(plotname)
@@ -213,9 +215,6 @@ shinyServer(function(input, output, session) {
       plotname <- paste("plot", my_i, sep="")
 
       output[[plotname]] <- renderPlotly({
-        # Take a dependency on input$goButton
-        input$exprGeneButton
-
         gene_of_interest <- parse_gene_input(geneExpr_genes()[my_i])
         gene_name <- parse_gene_input(geneExpr_genes()[my_i], get="name")
         plot_geneExpr(gene_of_interest, gene_name, input_midplot=input$Midpoint)
