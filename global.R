@@ -5,7 +5,6 @@ library(plotly)
 library(magrittr)
 
 barcodes = read_tsv('Data/redstone_1_barcodes.tsv', col_names = 'Barcode')
-
 genes = read_tsv('Data/redstone_1_genes.tsv',col_names = c('ID','Symbol'))
 tsne = read_tsv('Data/redstone_pbmc3k_tdf', skip= 1, col_name = c('barcode','tSNE_1',	'tSNE_2','id' ))
 expression = readMM('Data/redstone_1_matrix.mtx')
@@ -13,23 +12,24 @@ expression = readMM('Data/redstone_1_matrix.mtx')
 rownames(expression) = genes$ID
 colnames(expression) = barcodes$Barcode
 
-rowMax = expression %>% apply(1,max)
-expression = expression[rowMax>0,]
-genes = genes[rowMax > 0,]
+# get rid of genes (aka. rows) for which all cells have expression = 0
+rowMax <- expression %>% apply(1,max)
+expression <- expression[rowMax>0,]
+genes <- genes[rowMax > 0,]
 
 normalizeExpresion = function(v) {
-  expression %>% apply(1,function(v){
-    m <- log(1+v)
-    m<-m-mean(m)
-    m<-m/sd(m)
-    return(m)
-  }) %>% t
-  
+  # for each cell, compute total expression
+  expression_sum_for_each_cell <- colSums(expression)
+  # get the overall median expression value
+  overall_median_expression <- median(expression_sum_for_each_cell)
+  # scale each expression value by the cell-specific scale factor
+  scale_factor_for_each_cell <- (expression_sum_for_each_cell/overall_median_expression)
+  normalized_expression <- expression/scale_factor_for_each_cell
+
+  normalized_expression
 }
 
 expression = normalizeExpresion(expression)
-
-
 
 genes$Symbol_ID <- paste(genes$Symbol,genes$ID, sep="_")
 list_of_genesymbols <- sort(genes$Symbol_ID)
@@ -43,4 +43,22 @@ parse_gene_input <- function(x, get="id"){
   }
 }
 
-
+#' Draw geneExpr scatterplot
+plot_geneExpr <- function(gene_of_interest, gene_name, input_midplot=1){
+  gene_expr <-
+    data.frame(
+      barcode = barcodes$Barcode,
+      expr = expression[gene_of_interest,]) %>%
+    tbl_df()
+  ## Join with tSNE
+  tsne1 <-
+    left_join(tsne, gene_expr, by="barcode")
+  ## Plot
+  tsne1 %>%
+    ggplot(aes(x=tSNE_1, y=tSNE_2, color=expr)) +
+    geom_point(alpha=1, size=.5) +
+    scale_colour_gradient2(low="grey44", high="red", mid="grey99", midpoint=input_midplot) +
+    theme_classic() +
+    ggtitle(gene_name)
+  ggplotly()
+}

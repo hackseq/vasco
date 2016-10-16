@@ -1,16 +1,18 @@
 difGenes = function(group1,group2){
+
   group1 = expression[,group1]
   group2 = expression[,group2]
-  
-  group1Median = group1 %>% apply(1,mean)
-  group2Median = group2 %>% apply(1,mean)
-  
-  fChange = group1Median - group2Median
-  
+
+  group1Mean = rowMeans(group1)
+  group2Mean = rowMeans(group2)
+
+  fChange = (group1Mean+0.1) / (group2Mean+0.1)
+
   difGeneOrder = order(fChange, decreasing = TRUE)
-  data.frame(Gene.Symbol = genes$Symbol[difGeneOrder],
-             difference = fChange[difGeneOrder],
-             group1Expression = group1Median[difGeneOrder],
-             group2Expression = group2Median[difGeneOrder])
-  
+  data.frame("Gene Symbol" = genes$Symbol[difGeneOrder],
+             "Fold change" = fChange[difGeneOrder],
+             "group1 Expression" = group1Mean[difGeneOrder],
+             "group2 Expression" = group2Mean[difGeneOrder],
+             check.names = FALSE)
+
 }
