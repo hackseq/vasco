@@ -35,29 +35,37 @@ shinyServer(function(input, output, session) {
   })
   
   # COMPARE TAB-------
-  output$tSNE_select <- renderPlotly({
+  #render initial seleciton plot
+  output$tSNE_select_one <- renderPlotly({
     # size of the bins depend on the input 'bins'
-    plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode) %>%
+    plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode, source = "selection_plot_one") %>%
       layout(dragmode = "select")
   })
+  
+  # selection code and differential expression ------
+  selected_data <- reactive({event_data("plotly_selected", source = "selection_plot_one")})
+  
+  observeEvent(selected_data(),
+               {
+    show("pop_one_selected")
+  })
+  
   #hide button one and two on load
-  hide(id="plot_one_selected")
-  #hide(id="plot_one_selected")
+  hide(id="pop_one_selected")
+  hide(id="pop_two_selected")
   
   # alternative plotting window after selection ------
-  observeEvent(input$plot_selected, {
+  observeEvent(input$pop_one_selected, {
     updateTabsetPanel(session, "main_panel", selected = "Explore")
     
   })
   
-  output$newPlot <- renderPlotly({
-    input$plot_selected
-    new_tsne <- isolate(selected_data())
-    plot_ly(new_tsne, x = ~x, y = ~y, text = ~key) %>%
-      layout(dragmode = "select")})
+  #output$newPlot <- renderPlotly({
+   # input$pop_selected
+    #new_tsne <- isolate(selected_data())
+    #plot_ly(new_tsne, x = ~x, y = ~y, text = ~key) %>%
+     # layout(dragmode = "select")})
   
-  # selection code and differential expression ------
-  selected_data <- reactive({event_data("plotly_selected")})
   
   selected_vector1 = reactive({
     barcodes$Barcode %in% selected_data()$key

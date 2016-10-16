@@ -40,10 +40,11 @@ shinyUI(fluidPage(
                # exploration of selection
                tabPanel( 'Compare',
                          inputId= 'Explore',
-                         column(8,plotlyOutput('tSNE_select')),
+                         column(8,plotlyOutput('tSNE_select_one')),
+                         column(8,plotlyOutput('tSNE_select_two')),
                          column(4,wellPanel( p("Please select first population"),
-                                             actionButton(inputId = "plot_one_selected", label = "group one"),
-                                             actionButton(inputId = "plot_two_selected", label = "group two"))
+                                             actionButton(inputId = "pop_one_selected", label = "group one"),
+                                             actionButton(inputId = "pop_two_selected", label = "group two"))
                                             
                                 )
                          )
