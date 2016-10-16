@@ -106,7 +106,10 @@ shinyServer(function(input, output, session) {
   selected_vector2 = reactive(
     { 
       if(input$pop_two_selected == 1){
-        isolate(!selected_vector1())
+        isolate({
+          tsneSubset = tsne[tsne$tSNE_1 %in% selected_data_two()$x & tsne$tSNE_2 %in% selected_data_two()$y,]
+          barcodes$Barcode %in% tsneSubset$barcode
+        })
       }
     }
   )
