@@ -16,7 +16,6 @@ shinyUI(fluidPage(
   useShinyjs(),
   # debug output change it at will
   verbatimTextOutput("debug"),
-  plotlyOutput('difHeatmap'),
   # Application title
   titlePanel("Single cell vis"),
   tabsetPanel( id = "main_panel",
@@ -30,7 +29,7 @@ shinyUI(fluidPage(
                                         plotlyOutput('countPerCluster'))
                         )),
                # panel for displaying individual gene expression data
-               tabPanel('geneExpr', 
+               tabPanel('geneExpr',
                         column(4, wellPanel(selectizeInput('input_genes', 'Select genes',
                                                            choices = list_of_genesymbols,
                                                            options = list(maxItems = 4),
@@ -44,12 +43,12 @@ shinyUI(fluidPage(
                          column(4,wellPanel( h4(id = "select_text", "Please select first population"),
                                              actionButton(inputId = "pop_one_selected", label = "Save group one"),
                                              actionButton(inputId = "pop_two_selected", label = "Save group two"))
-                                
+
                          ),
                          div(id= "div_select_one", column(8,plotlyOutput('tSNE_select_one'))),
-                         div(id = "div_select_two", column(8,plotlyOutput('tSNE_select_two')))
-
+                         div(id = "div_select_two", column(8,plotlyOutput('tSNE_select_two'))),
+                         div(id= 'comparisonOutput', column(8, plotlyOutput('difHeatmap')))
                          )
-               ) 
+               )
   ))
 
