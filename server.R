@@ -34,6 +34,14 @@ shinyServer(function(input, output, session) {
     
   })
   
+  # Select tSNE plot in Compare tab
+  output$tSNE_select <- renderPlotly({
+    # size of the bins depend on the input 'bins'
+    plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode) %>%
+      layout(dragmode = "select")
+    
+  })
+  
   # selection code and differential expression ------
   selected_data <- reactive({event_data("plotly_selected")})
   

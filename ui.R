@@ -1,4 +1,3 @@
-
 #
 # This is the user-interface definition of a Shiny web application. You can
 # run the application by clicking 'Run App' above.
@@ -23,10 +22,10 @@ shinyUI(fluidPage(
                tabPanel('tSNE',
                         # selected button!!
                         fluidRow(
-                          # main window plots
-                          column(8,
-                                 plotlyOutput('tSNEPlot'),
-                                 plotlyOutput('countPerCluster'))
+                                 # main window plots
+                                 column(8,
+                                        plotlyOutput('tSNEPlot'),
+                                        plotlyOutput('countPerCluster'))
                         )),
                # panel for displaying individual gene expression data
                tabPanel('geneExpr', 
@@ -40,9 +39,9 @@ shinyUI(fluidPage(
                # exploration of selection
                tabPanel( 'Compare',
                          inputId= 'Explore',
-                         column(8,plotlyOutput('newPlot')),
+                         column(8,plotlyOutput('tSNE_select')),
                          column(4,wellPanel( actionButton(inputId = "plot_selected", label = "plot selected")))
-               )
-  ) 
-))
+                         )
+               ) 
+  ))
 
