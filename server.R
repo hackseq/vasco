@@ -118,7 +118,7 @@ shinyServer(function(input, output, session) {
       }
     }
   )
-  
+
   output$downloadDifGenes = downloadHandler(
     filename = 'difGenes.tsv',
     content = function(file) {
@@ -167,7 +167,7 @@ shinyServer(function(input, output, session) {
     gene_of_interest <- parse_gene_input(input$input_genes[1])
     gene_name <- parse_gene_input(input$input_genes[1], get="name")
 
-    plot_geneExpr(gene_of_interest, gene_name, input_midplot=input$Midpoint)
+    plot_geneExpr(gene_of_interest, gene_name, input_midplot=1)
   })
 
 
