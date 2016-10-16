@@ -141,7 +141,7 @@ shinyServer(function(input, output, session) {
       print(dim(group2))
       toPlot = cbind(group1,group2)
       print('plotted')
-      plot_ly(z = toPlot[1:50,], x = '',
+      plot_ly(z = toPlot[1:50,] %>% as.matrix %>% apply(1,ogbox::scale01) %>% t, x = '',
               y = differentiallyExpressed()$Gene.Symbol[1:50] %>% as.character,
               type = "heatmap")
     } else{

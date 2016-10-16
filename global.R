@@ -19,13 +19,13 @@ genes <- genes[rowMax > 0,]
 
 normalizeExpresion = function(v) {
   # for each cell, compute total expression
-  expression_sum_for_each_cell <- colSums(expression)  
-  # get the overall median expression value 
-  overall_median_expression <- median(expression_sum_for_each_cell)   
+  expression_sum_for_each_cell <- colSums(expression)
+  # get the overall median expression value
+  overall_median_expression <- median(expression_sum_for_each_cell)
   # scale each expression value by the cell-specific scale factor
   scale_factor_for_each_cell <- (expression_sum_for_each_cell/overall_median_expression)
   normalized_expression <- expression/scale_factor_for_each_cell
-  
+
   normalized_expression
 }
 
