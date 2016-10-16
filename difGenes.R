@@ -13,5 +13,4 @@ difGenes = function(group1,group2){
              group1Expression = group1Median[difGeneOrder],
              group2Expression = group2Median[difGeneOrder])
   
-  
 }
