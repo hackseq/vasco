@@ -16,6 +16,7 @@ shinyUI(fluidPage(
   useShinyjs(),
   # debug output change it at will
   verbatimTextOutput("debug"),
+  plotlyOutput('difHeatmap'),
   # Application title
   titlePanel("Single cell vis"),
   tabsetPanel( id = "main_panel",

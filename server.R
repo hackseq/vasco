@@ -23,13 +23,14 @@ source('difGenes.R')
 shinyServer(function(input, output, session) {
   
   # debugging output, modify at will -----
-  output$debug <- renderPrint({ #differentiallyExpressed()
+  output$debug <- renderPrint({ 
+    #tsne[tsne$barcode %in% rownames(expression)[selected_vector1()],]
   })
   
   # main SNE plot ---------
   output$tSNEPlot <- renderPlotly({
     # size of the bins depend on the input 'bins'
-    plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode) %>%
+    plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode, source= 'hede') %>%
       layout(dragmode = "select")
     
   })
@@ -87,6 +88,7 @@ shinyServer(function(input, output, session) {
     disable(id = "pop_two_selected")
   })
   
+
   #output$newPlot <- renderPlotly({
    # input$pop_selected
     #new_tsne <- isolate(selected_data())
@@ -96,26 +98,54 @@ shinyServer(function(input, output, session) {
   
   selected_vector1 = reactive(
     {input$pop_one_selected
-      isolate(
-        barcodes$Barcode %in% selected_data()$key
-      )})
+      isolate({
+        tsneSubset = tsne[tsne$tSNE_1 %in% selected_data()$x & tsne$tSNE_2 %in% selected_data()$y,]
+        barcodes$Barcode %in% tsneSubset$barcode
+      })})
+  
   selected_vector2 = reactive(
-    { input$pop_two_selected
-      isolate(!selected_vector1())
+    { 
+      if(input$pop_two_selected == 1){
+        isolate(!selected_vector1())
+      }
     }
   )
-  
+
   
   differentiallyExpressed = reactive({
     print('should I calculate dif genes?')
-    if(!is.null(selected_data())){
       print('yeah I guess')
-      difGenes(group1 = selected_vector1(), 
-               group2 = selected_vector2())
+      if(!is.null(selected_vector2()) & !is.null(selected_vector1())){
+        difGenes(group1 = isolate(selected_vector1()), 
+                 group2 = selected_vector2())
+      }
+  })
+  
+
+  # dif genes heatmap
+  output$difHeatmap = renderPlotly({
+    print('rendering heatmap')
+    if(!is.null(differentiallyExpressed())){
+      orderedExpression  = expression[match(differentiallyExpressed()$Gene.Symbol,
+                                            genes$Symbol),]
+      print('expression ordered')
+      # the selection is isolated so it will wait for differential expression results
+      group1 = orderedExpression[,isolate(selected_vector1())]
+      group2 = orderedExpression[,isolate(selected_vector2())]
+      print(dim(group1))
+      print(dim(group2))
+      toPlot = cbind(group1,group2)
+      print('plotted')
+      plot_ly(z = toPlot[1:50,], x = '',
+              y = differentiallyExpressed()$Gene.Symbol[1:50] %>% as.character,
+              type = "heatmap")
+    } else{
+      print('or maybe not')
+      NULL
     }
   })
-
-
+  
+  
   
   # histogram of cells -----------
   output$countPerCluster <- renderPlotly({
