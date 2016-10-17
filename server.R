@@ -373,6 +373,14 @@ shinyServer(function(input, output, session) {
     # to display properly.
     do.call(tagList, plot_output_list)
   })
+  
+  observe({
+    if(!input$exprVis == 'tSNE'){
+      hide('tsneHeatmapOptions')
+    } else{
+      show('tsneHeatmapOptions')
+    }
+  })
 
   # Call renderPlot for each one. Plots are only actually generated when they
   # are visible on the web page.
