@@ -39,21 +39,21 @@ shinyUI(
                                                            selected = c('CD8A_ENSG00000153563'),
                                                            multiple = TRUE),
                                             radioButtons("checkVisualization",
-                                                          label = h3("Visualizations"),
-                                                          choices = list("tSNE gene expression heatmap" = 1,
-                                                          "Histograms" = 2),
+                                                          label = h3("Plot types"),
+                                                          choices = list("tSNE heatmap" = 1,
+                                                          "Box plots" = 2),
                                                            selected = 1),
                                             conditionalPanel(
                                               condition = "input.checkVisualization == 1 || input.checkVisualization == 2",
-                                              actionButton("exprGeneButton", "Plot expression data")
+                                              actionButton("exprGeneButton", "Visualize")
                                             ),
                                             conditionalPanel(
                                               condition = "input.checkVisualization == 1",
-                                              sliderInput("MinMax", label= h5("Range of expression:"), min = 0, max = 1, value = c(0,1), step= 0.02),
-                                              sliderInput("Midpoint", label= h5("Midpoint:"), min = 0, max = 1, value = 0.5, step= 0.02),
-                                              colourInput("colmax", "Select maximum colour", value = geneExpr_colorMax),
-                                              colourInput("colmid", "Select midpoint colour", value = geneExpr_colorMid),
-                                              colourInput("colmin", "Select minimum colour", value = geneExpr_colorMin)
+                                              sliderInput("MinMax", label= h5("Adjust range of expression:"), min = 0, max = 1, value = c(0,1), step= 0.02),
+                                              sliderInput("Midpoint", label= h5("Adjust midpoint of color scale:"), min = 0, max = 1, value = 0.5, step= 0.02),
+                                              colourInput("colmax", "Select color of scale maximum", value = geneExpr_colorMax),
+                                              colourInput("colmid", "Select color of scale midpoint", value = geneExpr_colorMid),
+                                              colourInput("colmin", "Select color of scale minimum", value = geneExpr_colorMin)
                                             )
                                           )
                                ),
