@@ -28,7 +28,8 @@ shinyServer(function(input, output, session) {
   query_vals <- reactive({session$clientData$url_search
                                 })
 
-  observe({if ('?compare' ==query_vals()){updateTabsetPanel(session, inputId = 'main_panel', 'Compare') }})
+  observe({if ('?compare' == query_vals()){print(query_vals())
+    updateTabsetPanel(session, inputId = 'main_panel', 'Explore clusters') }})
 
 
   # main SNE plot ---------
