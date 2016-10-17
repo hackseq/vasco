@@ -131,7 +131,7 @@ shinyServer(function(input, output, session) {
     if(input$selectDefinedGroupForRename){
       show(id = 'whichGroupsForRename')
     } else{
-      updateCheckboxGroupInput(session, inputId = 'whichGroupsForRename', choices = unique(rValues$tsne$id), selected = NULL)
+      updateCheckboxGroupInput(session, inputId = 'whichGroupsForRename', choices = unique(rValues$tsne$id) %>% sort, selected = NULL)
       hide(id = 'whichGroupsForRename')
     }
   })
@@ -158,11 +158,11 @@ shinyServer(function(input, output, session) {
         updateCheckboxGroupInput(session,
                                  inputId = 'whichGroups',
                                   label = 'Predefined clusters:',
-                                  choices = unique(rValues$tsne$id))
+                                  choices = unique(rValues$tsne$id) %>% sort)
         updateCheckboxGroupInput(session,
                                  inputId = 'whichGroupsForRename',
                                  label = 'Predefined clusters:',
-                                 choices = unique(rValues$tsne$id))
+                                 choices = unique(rValues$tsne$id) %>% sort)
     })
   }
 })
@@ -172,7 +172,7 @@ shinyServer(function(input, output, session) {
     if(input$selectDefinedGroup){
       show(id = 'whichGroups')
     } else{
-      updateCheckboxGroupInput(session, inputId = 'whichGroups', choices = unique(rValues$tsne$id), selected = NULL)
+      updateCheckboxGroupInput(session, inputId = 'whichGroups', choices = unique(rValues$tsne$id) %>% sort, selected = NULL)
       hide(id = 'whichGroups')
     }
   })
