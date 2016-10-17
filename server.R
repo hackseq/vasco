@@ -255,10 +255,20 @@ shinyServer(function(input, output, session) {
     NumCells<-table(tsne$id)
     NumCells<-as.data.frame(NumCells)
     plot_ly(NumCells, x=~Var1, y=~Freq, color=~Var1, type='bar') %>%
-      layout(xaxis = ax)
+      layout(xaxis = ax,
+             yaxis = list(title = "Number of cells"))
   })
 
   # plotting selected genes ----------
+  # disable button when empty
+  observe({
+    if(length(input$input_genes)==0){
+      disable('exprGeneButton')
+    }else{
+      enable('exprGeneButton')
+    }
+  })
+  
   geneExpr_genes <- reactive({
     # Take a dependency on input$goButton
     input$exprGeneButton
