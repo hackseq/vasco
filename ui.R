@@ -63,7 +63,7 @@ shinyUI(
                # exploration of selection
                tabPanel( 'Compare',
                          id= 'Compare',
-                         column(4,wellPanel( h4(id = "select_text", "Please select first population"),
+                         column(2,wellPanel( h4(id = "select_text", "Please select first population"),
                                              actionButton(inputId = "pop_one_selected", label = "Save group one"),
                                              actionButton(inputId = "pop_two_selected", label = "Save group two"),
                                              br(),
@@ -77,7 +77,7 @@ shinyUI(
                                              ),
                                              actionButton(inputId = "reload", label = "Select new groups"),
                                              downloadButton(outputId = 'downloadDifGenes', label = 'Download'))),
-                         column(8,
+                         column(10,
                          div(id= "div_select_one", plotlyOutput('tSNE_select_one')),
                          div(id = "div_select_two", plotlyOutput('tSNE_select_two')),
 

@@ -186,10 +186,11 @@ shinyServer(function(input, output, session) {
 
       diff_genes <- differentiallyExpressed()$`Gene Symbol`
       if(is.null(input$difGeneTable_rows_selected)){
-      gene_idx <- c(1:gene_cnt, (length(diff_genes)-gene_cnt+1):length(diff_genes))
+        gene_idx <- c(1:gene_cnt, (length(diff_genes)-gene_cnt+1):length(diff_genes))
       } else{
         gene_idx = input$difGeneTable_rows_selected
       }
+      
       dg_mat <- c()
       for ( n in gene_idx ) {
         gene_idx <- which(genes$Symbol == diff_genes[n])
@@ -206,11 +207,6 @@ shinyServer(function(input, output, session) {
         )
       }
 
-      # dg_mat %>% mutate(
-      #   gene = as.factor(gene),
-      #   expr = as.numeric(expr),
-      #   group = as.factor(group),
-      #   panel = as.factor(panel)) %>%
       dg_mat <-
         dg_mat %>% mutate(
           gene = as.character(gene),
@@ -220,17 +216,17 @@ shinyServer(function(input, output, session) {
         arrange(panel)
 
       dg_mat$gene <- factor(dg_mat$gene, levels = dg_mat$gene)
-      ggplot(dg_mat, aes(x=group, y=expr, fill=group)) +
-        geom_boxplot() +
-        facet_wrap(~gene, scales="free_x",
-                   nrow=2, ncol=gene_cnt)
+      ggplot(dg_mat, aes(x=group, y=expr, fill=group)) + geom_boxplot() + 
+        facet_wrap(~gene, scales="free_x", nrow=2, ncol=gene_cnt) + 
+        theme(panel.margin = unit(1, "lines"),
+              panel.background = element_rect(fill = "white"),
+              strip.background = element_rect(fill = "white"),
+              legend.position = "none")
       ggplotly()
     } else {
       plotly_empty()
     }
   })
-
-
 
   output$tSNE_summary <- renderPlotly({
     groups <- second_clicked_eds()
