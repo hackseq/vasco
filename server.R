@@ -69,7 +69,7 @@ shinyServer(function(input, output, session) {
   hide(id="comparisonOutput")
   hide(id = 'downloadDifGenes')
   hide(id="reload")
-  hide(id = )
+  hide(id = 'whichGroups')
   })
 
 
