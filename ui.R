@@ -30,7 +30,10 @@ shinyUI(
                                  # main window plots
                                  column(8,
                                         plotlyOutput('tSNEPlot',height = '600px'),
-                                        plotlyOutput('countPerCluster'))
+                                        # we may not want the barchart displayed; see issue#30
+                                        # plotlyOutput('countPerCluster'),
+                                        br()
+                                        )
                         )),
                # panel for displaying individual gene expression data
                tabPanel('Visualize genes',
@@ -42,7 +45,7 @@ shinyUI(
                                                            multiple = TRUE),
                                             actionButton("exprGeneButton", "Visualize"),
                                             div(id = 'tsneHeatmapOptions',
-                                              sliderInput("MinMax", label= h5("Adjust range of expression:"), min = 0, max = 1, value = c(0,1), step= 0.02),
+                                              sliderInput("MinMax", label= h5("Adjust heatmap color scale:"), min = 0, max = 1, value = c(0,1), step= 0.02),
                                               sliderInput("Midpoint", label= h5("Adjust midpoint of color scale:"), min = 0, max = 1, value = 0.5, step= 0.02),
                                               colourInput("colmax", "Select color of scale maximum", value = geneExpr_colorMax),
                                               colourInput("colmid", "Select color of scale midpoint", value = geneExpr_colorMid),
