@@ -3,6 +3,7 @@ library(dplyr)
 library(Matrix)
 library(plotly)
 library(magrittr)
+source('regexMerge.R')
 
 barcodes = read_tsv('Data/redstone_1_barcodes.tsv', col_names = 'Barcode')
 genes = read_tsv('Data/redstone_1_genes.tsv',col_names = c('ID','Symbol'))
@@ -18,20 +19,19 @@ rowMax <- expression %>% apply(1,max)
 expression <- expression[rowMax>0,]
 genes <- genes[rowMax > 0,]
 
-normalizeExpression = function(mat) {
- mat<-expression
- mat<-t(mat)
- 
- # for each cell, compute total expression
- expression_sum_for_each_cell <- rowSums(mat)
- # get the overall median expression value
- overall_median_expression <- median(expression_sum_for_each_cell)
- 
- normalized_expression <- mat/(expression_sum_for_each_cell/overall_median_expression)
- t(normalized_expression)
+normalizeExpresion = function(v) {
+  # for each cell, compute total expression
+  expression_sum_for_each_cell <- colSums(expression)
+  # get the overall median expression value
+  overall_median_expression <- median(expression_sum_for_each_cell)
+  # scale each expression value by the cell-specific scale factor
+  scale_factor_for_each_cell <- (expression_sum_for_each_cell/overall_median_expression)
+  normalized_expression <- expression/scale_factor_for_each_cell
+
+  normalized_expression
 }
 
-expression = normalizeExpression(expression)
+expression = normalizeExpresion(expression)
 
 genes$Symbol_ID <- paste(genes$Symbol,genes$ID, sep="_")
 list_of_genesymbols <- sort(genes$Symbol_ID)
@@ -53,9 +53,6 @@ plot_geneExpr <- function(gene_of_interest, gene_name, input_midplot=1,
       barcode = barcodes$Barcode,
       expr = expression[gene_of_interest,]) %>%
     tbl_df()
-
-  input_midplot <- max(gene_expr$expr)*input_midplot
-
   ## Join with tSNE
   tsne1 <-
     left_join(tsne, gene_expr, by="barcode")

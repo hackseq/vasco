@@ -261,14 +261,14 @@ shinyServer(function(input, output, session) {
 
   output$difGeneTable = renderDataTable({
     if(!is.null(differentiallyExpressed())){
-      datatable(differentiallyExpressed(),selection = 'single')
+      datatable(differentiallyExpressed(),selection = 'multiple')
     }
   })
   # if a gene is selected from the data table, select that gene in the expression window
   observe({
     if(!is.null(input$difGeneTable_rows_selected)){
       gene = differentiallyExpressed()[input$difGeneTable_rows_selected,]$`Gene Symbol`
-      selectedGene = list_of_genesymbols[grepl(paste0('^',gene,'_'),list_of_genesymbols)]
+      selectedGene = list_of_genesymbols[grepl(regexMerge(paste0('^',gene,'_')),list_of_genesymbols)]
       updateSelectInput(session, 'input_genes', selected = selectedGene)
     }
   })
