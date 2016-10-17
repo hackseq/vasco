@@ -23,7 +23,8 @@ shinyUI(
   titlePanel("Single cell vis"),
   tabsetPanel( id = "main_panel",
                # main panel for tSNE plot and group selection
-               tabPanel('tSNE',
+               tabPanel('Summary',
+                        id = "tSNE",
                         # selected button!!
                         fluidRow(
                                  # main window plots
@@ -32,7 +33,8 @@ shinyUI(
                                         plotlyOutput('countPerCluster'))
                         )),
                # panel for displaying individual gene expression data
-               tabPanel('geneExpr',
+               tabPanel('Visualize genes',
+                        id = "geneEpxr",
                         column(4, wellPanel(selectizeInput('input_genes', h1('Select genes'),
                                                            choices = list_of_genesymbols,
                                                            options = list(maxItems = geneExpr_maxItems),
@@ -67,7 +69,7 @@ shinyUI(
                         )
                ),
                # exploration of selection
-               tabPanel( 'Compare',
+               tabPanel( 'Explore clusters',
                          id= 'Compare',
                          column(2,wellPanel( h4(id = "select_text", "Please select first population"),
                                              actionButton(inputId = "pop_one_selected", label = "Save group one"),
