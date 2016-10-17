@@ -27,7 +27,22 @@ shinyUI(
                         id = "tSNE",
                         # selected button!!
                         fluidRow(
-                                 # main window plots
+                                br(),
+                                # welcome text
+                                column(8, offset = 1,
+                                       tags$div(
+                                         tags$p("This application facilitates real-time data visualization and exploration of single cell RNA-seq data.
+                                                It takes the gene-barcode matrix and the clustering result as input."),
+                                         tags$p("Users can:")
+                                       ),
+
+                                  tags$ul(
+                                  tags$li("visualize the cells using t-distributed stochastic neighbour embedding (t-SNE) plots"),
+                                  tags$li("explore the expression pattern of specific genes"),
+                                  tags$li("investigate the identity of cell clusters by examining genes that are specific to a cluster")
+                                )),
+
+                                # main window plots
                                  column(8,
                                         plotlyOutput('tSNEPlot',height = '600px'),
                                         # we may not want the barchart displayed; see issue#30
@@ -98,9 +113,12 @@ shinyUI(
                          div(id = "div_select_two", plotlyOutput('tSNE_select_two',height = '600px')),
                          dataTableOutput('difGeneTable'),
                          div(id= 'comparisonOutput',
-                             tabsetPanel(tabPanel('histPlot',
+
+                             tabsetPanel(tabPanel('Visualize genes',
+                                                  id = "histPlot",
                                                   plotlyOutput('histPlot', height = '500px')),
-                                         tabPanel('tSNE plot',
+                                         tabPanel('Visualize selected groups',
+                                                  id = 'tSNE plot',
                                                   plotlyOutput('tSNE_summary'), plotlyOutput('cell_type_summary')))
                              )
                          ))

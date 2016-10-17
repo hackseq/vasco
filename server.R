@@ -29,7 +29,8 @@ shinyServer(function(input, output, session) {
   query_vals <- reactive({session$clientData$url_search
                                 })
 
-  observe({if ('?compare' ==query_vals()){updateTabsetPanel(session, inputId = 'main_panel', 'Compare') }})
+  observe({if ('?compare' == query_vals()){print(query_vals())
+    updateTabsetPanel(session, inputId = 'main_panel', 'Explore clusters') }})
 
 
   # main SNE plot ---------
@@ -278,8 +279,11 @@ shinyServer(function(input, output, session) {
       dg_mat$gene <- factor(dg_mat$gene, levels = dg_mat$gene)
       dimensions= ceiling(sqrt(length(dg_mat$gene %>% unique)))
       ggplot(dg_mat, aes(x=group, y=expr, fill=group)) + geom_boxplot() +
+        labs(y="log2(gene expression + 0.1)", x="Group") + 
         facet_wrap(~gene, scales="free_x", nrow=dimensions, ncol=dimensions) +
-        theme(panel.margin = unit(1, "lines"),
+        theme(plot.margin = unit(c(0, 0, 0, 3), "lines"),
+              panel.margin.y = unit(1, "lines"),
+              panel.margin.x = unit(0.5, "lines"),
               panel.background = element_rect(fill = "white"),
               strip.background = element_rect(fill = "white"),
               legend.position = "none")
@@ -307,8 +311,10 @@ shinyServer(function(input, output, session) {
     }
     plot_ly(all_groups, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~group, colors = colours,
              key = ~barcode, source = "selection_plot_two") %>%
-              layout(dragmode = "select",xaxis = list(range = c(-40,40)),
-                      yaxis = list(range = c(-40,40)))
+              layout(dragmode = "select",
+                     xaxis = list(range = c(-40,40), title=tsne_xlab),
+                     yaxis = list(range = c(-40,40), title=tsne_ylab)
+                     )
     })
 
   # histogram of cells -----------
@@ -358,7 +364,7 @@ shinyServer(function(input, output, session) {
     if(!is.null(differentiallyExpressed())){
       table = differentiallyExpressed()
       table %<>% mutate(`Fold change` = format(`Fold change`, digits = 3,scientific=FALSE)) %>%
-        mutate(`group1 Expression` = format(`group1 Expression`, digits = 3,scientific=FALSE)) %>% 
+        mutate(`group1 Expression` = format(`group1 Expression`, digits = 3,scientific=FALSE)) %>%
         mutate(`group2 Expression` = format(`group2 Expression`, digits = 3,scientific=FALSE))
       datatable(table,selection = 'multiple')
     }
@@ -417,7 +423,7 @@ shinyServer(function(input, output, session) {
     # to display properly.
     do.call(tagList, plot_output_list)
   })
-  
+
   observe({
     if(!input$exprVis == 'tSNE'){
       hide('tsneHeatmapOptions')
