@@ -123,7 +123,7 @@ plot_geneExprGeneCluster <- function(gene_of_interest, gene_name){
     ggplot(aes(x=id, y=expr)) +
     geom_boxplot() +
     facet_wrap(~gene) +
-    xlab("Cluster") +
+    xlab("") +
     ylab("Normalized expression") +
     theme_classic() +
     theme(
