@@ -94,7 +94,7 @@ plot_geneExpr <- function(gene_of_interest, gene_name,
 }
 
 #' Draw geneExpr boxplot by cluster
-plot_geneExprGeneCluster <- function(gene_of_interest, gene_name){
+plot_geneExprGeneCluster <- function(gene_of_interest, gene_name,tsne){
   the_genes <- setNames(gene_name, gene_of_interest)
 
   if (length(gene_of_interest) == 1) {

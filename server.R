@@ -464,7 +464,7 @@ shinyServer(function(input, output, session) {
   output$geneExprGeneCluster <- renderPlotly({
     gene_of_interest <- parse_gene_input(geneExpr_genes())
     gene_name <- parse_gene_input(geneExpr_genes(), get="name")
-    plot_geneExprGeneCluster(gene_of_interest, gene_name)
+    plot_geneExprGeneCluster(gene_of_interest, gene_name,tsne = rValues$tsne)
   })
 
 
