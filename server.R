@@ -33,6 +33,15 @@ shinyServer(function(input, output, session) {
     updateTabsetPanel(session, inputId = 'main_panel', 'Explore clusters') }})
 
 
+  output$tSNE_selectForRename = renderPlotly({
+    plot_ly(rValues$tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode, source = 'selectForRename') %>%
+      layout(
+        dragmode = "select",
+        xaxis = list(title = tsne_xlab),
+        yaxis = list(title = tsne_ylab)
+      )
+  })
+  
   # main SNE plot ---------
   output$tSNEPlot <- renderPlotly({
     # size of the bins depend on the input 'bins'
@@ -58,6 +67,9 @@ shinyServer(function(input, output, session) {
 
   # selection code and differential expression ------
   selected_data <- reactive({event_data("plotly_selected", source = "selection_plot_one")})
+  
+  selected_data_toRename <- reactive({event_data("plotly_selected", source = "selectForRename")})
+  
   selected_data_two <- reactive({event_data("plotly_selected", source = "selection_plot_two")})
 
   #shows the button when first population selected in plot
@@ -144,7 +156,7 @@ shinyServer(function(input, output, session) {
     if(input$renamePoulationButton>=1){
       isolate({
         if(!input$selectDefinedGroupForRename){
-          tsneSubset = rValues$tsne[rValues$tsne$tSNE_1 %in% selected_data()$x & rValues$tsne$tSNE_2 %in% selected_data()$y,]
+          tsneSubset = rValues$tsne[rValues$tsne$tSNE_1 %in% selected_data_toRename()$x & rValues$tsne$tSNE_2 %in% selected_data_toRename()$y,]
         } else{
           tsneSubset = rValues$tsne[rValues$tsne$id %in% input$whichGroupsForRename,]
         }
