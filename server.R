@@ -282,9 +282,11 @@ shinyServer(function(input, output, session) {
     groups <- second_clicked_eds()
     g1 <-  rbind(groups[[1]][c('barcode','tSNE_1',	'tSNE_2','id' )], dummy)
     g2 <-  rbind(groups[[2]][c('barcode','tSNE_1',	'tSNE_2','id' )], dummy)
+    intersection <- rbind(groups[[3]][c('barcode','tSNE_1',	'tSNE_2','id' )], dummy)
     #subtract 1 because we added an extra entry of each type in dummy array
-    g1_cell_counts<-table(g1$id) - 1
-    g2_cell_counts<-table(g2$id) - 1
+    intersection_counts <- table(intersection$id) - 1
+    g1_cell_counts<-table(g1$id) - 1 + intersection_counts
+    g2_cell_counts<-table(g2$id) - 1 + intersection_counts
     cell_names <- names(g1_cell_counts)
     data <- as.data.frame(rbind(g1_cell_counts, g2_cell_counts))
     plot_ly(data, x=cell_names, y=~g1_cell_counts, marker = list(color = 'rgb(140,0,0)'), type='bar', name = 'group 1') %>%
