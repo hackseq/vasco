@@ -23,37 +23,42 @@ shinyUI(
   titlePanel("Single cell vis"),
   tabsetPanel( id = "main_panel",
                # main panel for tSNE plot and group selection
-               tabPanel('tSNE',
+               tabPanel('Summary',
+                        id = "tSNE",
                         # selected button!!
                         fluidRow(
                                  # main window plots
                                  column(8,
-                                        plotlyOutput('tSNEPlot'),
-                                        plotlyOutput('countPerCluster'))
+                                        plotlyOutput('tSNEPlot',height = '600px'),
+                                        # we may not want the barchart displayed; see issue#30
+                                        # plotlyOutput('countPerCluster'),
+                                        br()
+                                        )
                         )),
                # panel for displaying individual gene expression data
-               tabPanel('geneExpr',
+               tabPanel('Visualize genes',
+                        id = "geneEpxr",
                         column(4, wellPanel(selectizeInput('input_genes', h1('Select genes'),
                                                            choices = list_of_genesymbols,
                                                            options = list(maxItems = geneExpr_maxItems),
                                                            selected = c('CD8A_ENSG00000153563'),
                                                            multiple = TRUE),
                                             radioButtons("checkVisualization",
-                                                          label = h3("Visualizations"),
-                                                          choices = list("tSNE gene expression heatmap" = 1,
-                                                          "Histograms" = 2),
+                                                          label = h3("Plot types"),
+                                                          choices = list("tSNE heatmap" = 1,
+                                                          "Box plots" = 2),
                                                            selected = 1),
                                             conditionalPanel(
                                               condition = "input.checkVisualization == 1 || input.checkVisualization == 2",
-                                              actionButton("exprGeneButton", "Plot expression data")
+                                              actionButton("exprGeneButton", "Visualize")
                                             ),
                                             conditionalPanel(
                                               condition = "input.checkVisualization == 1",
-                                              sliderInput("MinMax", label= h5("Range of expression:"), min = 0, max = 1, value = c(0,1), step= 0.02),
-                                              sliderInput("Midpoint", label= h5("Midpoint:"), min = 0, max = 1, value = 0.5, step= 0.02),
-                                              colourInput("colmax", "Select maximum colour", value = geneExpr_colorMax),
-                                              colourInput("colmid", "Select midpoint colour", value = geneExpr_colorMid),
-                                              colourInput("colmin", "Select minimum colour", value = geneExpr_colorMin)
+                                              sliderInput("MinMax", label= h5("Adjust range of expression:"), min = 0, max = 1, value = c(0,1), step= 0.02),
+                                              sliderInput("Midpoint", label= h5("Adjust midpoint of color scale:"), min = 0, max = 1, value = 0.5, step= 0.02),
+                                              colourInput("colmax", "Select color of scale maximum", value = geneExpr_colorMax),
+                                              colourInput("colmid", "Select color of scale midpoint", value = geneExpr_colorMid),
+                                              colourInput("colmin", "Select color of scale minimum", value = geneExpr_colorMin)
                                             )
                                           )
                                ),
@@ -67,7 +72,7 @@ shinyUI(
                         )
                ),
                # exploration of selection
-               tabPanel( 'Compare',
+               tabPanel( 'Explore clusters',
                          id= 'Compare',
                          column(2,wellPanel( h4(id = "select_text", "Please select first population"),
                                              actionButton(inputId = "pop_one_selected", label = "Save group one"),
@@ -84,12 +89,12 @@ shinyUI(
                                              actionButton(inputId = "reload", label = "Select new groups"),
                                              downloadButton(outputId = 'downloadDifGenes', label = 'Download'))),
                          column(10,
-                         div(id= "div_select_one", plotlyOutput('tSNE_select_one')),
-                         div(id = "div_select_two", plotlyOutput('tSNE_select_two')),
+                         div(id= "div_select_one", plotlyOutput('tSNE_select_one',height = '600px')),
+                         div(id = "div_select_two", plotlyOutput('tSNE_select_two',height = '600px')),
                          dataTableOutput('difGeneTable'),
                          div(id= 'comparisonOutput',
                              tabsetPanel(tabPanel('histPlot',
-                                                  plotlyOutput('histPlot')),
+                                                  plotlyOutput('histPlot', height = '500px')),
                                          tabPanel('tSNE plot',
                                                   plotlyOutput('tSNE_summary'), plotlyOutput('cell_type_summary')))
                              )
