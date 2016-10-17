@@ -32,8 +32,8 @@ shinyUI(
                                         plotlyOutput('tSNEPlot',height = '600px'),
                                         # we may not want the barchart displayed; see issue#30
                                         # plotlyOutput('countPerCluster'),
-                                        br()
-                                        )
+                                        br(),
+                                        offset=2)
                         )),
                # panel for displaying individual gene expression data
                tabPanel('Visualize genes',
@@ -63,20 +63,22 @@ shinyUI(
                # exploration of selection
                tabPanel( 'Explore clusters',
                          id= 'Compare',
-                         column(2,wellPanel( h4(id = "select_text", "Please select first population"),
-                                             actionButton(inputId = "pop_one_selected", label = "Save group one"),
-                                             actionButton(inputId = "pop_two_selected", label = "Save group two"),
+                         column(2,wellPanel( h4(id = "select_text", "Please select first group"),
+                                             actionButton(inputId = "pop_one_selected", label = "Save group 1"),
+                                             actionButton(inputId = "pop_two_selected", label = "Save group 2"),
                                              br(),
                                              div( id = 'definedInputSelection',
                                                   checkboxInput(inputId = 'selectDefinedGroup',
                                                                 value = F,
-                                                                label = 'Select defined groups?'),
+                                                                label = 'Select predefined cluster(s) for group 1'),
                                                   checkboxGroupInput(inputId = 'whichGroups',
-                                                                     label = 'Defined Groups',
+                                                                     label = 'Predefined clusters:',
                                                                      choices = unique(tsne$id))
                                              ),
-                                             actionButton(inputId = "reload", label = "Select new groups"),
-                                             downloadButton(outputId = 'downloadDifGenes', label = 'Download'))),
+                                             downloadButton(outputId = 'downloadDifGenes', label = 'Download'),
+                                             br(),
+                                             br(),
+                                             actionButton(inputId = "reload", label = "Select new groups"))),
                          column(10,
                          div(id= "div_select_one", plotlyOutput('tSNE_select_one',height = '600px')),
                          div(id = "div_select_two", plotlyOutput('tSNE_select_two',height = '600px')),

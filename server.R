@@ -100,7 +100,7 @@ shinyServer(function(input, output, session) {
   # when button one is clicked, update ui and assign cell population to var
   # and show button two
   observeEvent(input$pop_one_selected, {
-    html(id = "select_text", "Please select second population, or press save to select all outside group 1")
+    html(id = "select_text", "Please select second group, or 'Save group 2' to use the remaining cells as group 2")
     disable(id = "pop_one_selected")
     show(id= "div_select_two")
     show("pop_two_selected")
@@ -138,7 +138,7 @@ shinyServer(function(input, output, session) {
       isolate({
         updateCheckboxInput(session, inputId = 'selectDefinedGroup',
                             value = F,
-                            label = 'Select defined groups?')
+                            label = 'Select predefined cluster(s) for group 2')
         print('group1 selection attempt')
         if(!input$selectDefinedGroup){
           tsneSubset = tsne[tsne$tSNE_1 %in% selected_data()$x & tsne$tSNE_2 %in% selected_data()$y,]
@@ -282,9 +282,12 @@ shinyServer(function(input, output, session) {
     groups <- second_clicked_eds()
     g1 <-  rbind(groups[[1]][c('barcode','tSNE_1',	'tSNE_2','id' )], dummy)
     g2 <-  rbind(groups[[2]][c('barcode','tSNE_1',	'tSNE_2','id' )], dummy)
+    intersection <- rbind(groups[[3]][c('barcode','tSNE_1',	'tSNE_2','id' )], dummy)
     #subtract 1 because we added an extra entry of each type in dummy array
-    g1_cell_counts<-table(g1$id) - 1
-    g2_cell_counts<-table(g2$id) - 1
+    #also need to add the intersection back into groups because they were taken out in second_clicked_eds
+    intersection_counts <- table(intersection$id) - 1
+    g1_cell_counts<-table(g1$id) - 1 + intersection_counts
+    g2_cell_counts<-table(g2$id) - 1 + intersection_counts
     cell_names <- names(g1_cell_counts)
     data <- as.data.frame(rbind(g1_cell_counts, g2_cell_counts))
     plot_ly(data, x=cell_names, y=~g1_cell_counts, marker = list(color = 'rgb(140,0,0)'), type='bar', name = 'group 1') %>%
