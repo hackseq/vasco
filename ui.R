@@ -38,14 +38,22 @@ shinyUI(
                                                            options = list(maxItems = geneExpr_maxItems),
                                                            selected = c('CD8A_ENSG00000153563'),
                                                            multiple = TRUE),
-                                            checkboxGroupInput("checkVisualization",
+                                            radioButtons("checkVisualization",
                                                           label = h3("Visualizations"),
                                                           choices = list("tSNE gene expression heatmap" = 1,
                                                           "Histograms" = 2),
                                                            selected = 1),
-                                            numericInput("Midpoint", label = h3("Midpoint"), value = 1)
-                                          ),
-                               actionButton("exprGeneButton", "Plot expression data")
+                                            conditionalPanel(
+                                              condition = "input.checkVisualization == 1 || input.checkVisualization == 2",
+                                              actionButton("exprGeneButton", "Plot expression data")
+                                            ),
+                                            conditionalPanel(
+                                              condition = "input.checkVisualization == 1",
+                                              sliderInput("Midpoint", label= h3("Midpoint:"), min = 0, max = 1, value = 0.5, step= 0.02)
+                                              #numericInput("Midpoint", label = h3("Midpoint"), value = 1)
+                                            )
+                                          )
+
                                ),
                         column(8, uiOutput("geneExprPlot"))
                ),
