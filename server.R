@@ -35,7 +35,7 @@ shinyServer(function(input, output, session) {
   # main SNE plot ---------
   output$tSNEPlot <- renderPlotly({
     # size of the bins depend on the input 'bins'
-    plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode, source= 'hede') %>%
+    plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, key = ~barcode, source= 'hede') %>%
       layout(
         dragmode = "select",
         xaxis = list(title = tsne_xlab),
@@ -240,7 +240,7 @@ shinyServer(function(input, output, session) {
       dg_mat$gene <- factor(dg_mat$gene, levels = dg_mat$gene)
       dimensions= ceiling(sqrt(length(dg_mat$gene %>% unique)))
       ggplot(dg_mat, aes(x=group, y=expr, fill=group)) + geom_boxplot() +
-        labs(y="log2(gene expression + 0.1)", x="Group") + 
+        labs(y="log2(gene expression + 0.1)", x="Group") +
         facet_wrap(~gene, scales="free_x", nrow=dimensions, ncol=dimensions) +
         theme(plot.margin = unit(c(0, 0, 0, 3), "lines"),
               panel.margin.y = unit(1, "lines"),
