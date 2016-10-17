@@ -30,7 +30,10 @@ shinyUI(
                                  # main window plots
                                  column(8,
                                         plotlyOutput('tSNEPlot',height = '600px'),
-                                        plotlyOutput('countPerCluster'))
+                                        # we may not want the barchart displayed; see issue#30
+                                        # plotlyOutput('countPerCluster'),
+                                        br()
+                                        )
                         )),
                # panel for displaying individual gene expression data
                tabPanel('Visualize genes',
