@@ -32,8 +32,8 @@ shinyUI(
                                         plotlyOutput('tSNEPlot',height = '600px'),
                                         # we may not want the barchart displayed; see issue#30
                                         # plotlyOutput('countPerCluster'),
-                                        br()
-                                        )
+                                        br(),
+                                        offset=2)
                         )),
                # panel for displaying individual gene expression data
                tabPanel('Visualize genes',
