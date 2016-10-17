@@ -35,7 +35,11 @@ shinyServer(function(input, output, session) {
   output$tSNEPlot <- renderPlotly({
     # size of the bins depend on the input 'bins'
     plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode, source= 'hede') %>%
-      layout(dragmode = "select")
+      layout(
+        dragmode = "select",
+        xaxis = list(title = tsne_xlab),
+        yaxis = list(title = tsne_ylab)
+      )
   })
 
   # COMPARE TAB-------
@@ -43,7 +47,11 @@ shinyServer(function(input, output, session) {
   output$tSNE_select_one <- renderPlotly({
     # size of the bins depend on the input 'bins'
     plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode, source = "selection_plot_one") %>%
-      layout(dragmode = "select")
+      layout(
+        dragmode = "select",
+        xaxis = list(title = tsne_xlab),
+        yaxis = list(title = tsne_ylab)
+      )
   })
 
   # selection code and differential expression ------
@@ -82,7 +90,11 @@ shinyServer(function(input, output, session) {
   output$tSNE_select_two <- renderPlotly({
     input$pop_one_selected
     isolate( plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode, source = "selection_plot_two") %>%
-      layout(dragmode = "select") )
+      layout(
+        dragmode = "select",
+        xaxis = list(title = tsne_xlab),
+        yaxis = list(title = tsne_ylab)
+      ))
   })
 
   # when button one is clicked, update ui and assign cell population to var
