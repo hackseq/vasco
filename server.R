@@ -38,7 +38,6 @@ shinyServer(function(input, output, session) {
     # size of the bins depend on the input 'bins'
     plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode, source= 'hede') %>%
       layout(dragmode = "select")
-
   })
 
   # COMPARE TAB-------
@@ -95,8 +94,6 @@ shinyServer(function(input, output, session) {
     show(id= "div_select_two")
     show("pop_two_selected")
     hide(id="div_select_one")
-    
-
   })
 
   # when button two is clicked, update ui and assign cell population to var
@@ -138,14 +135,15 @@ shinyServer(function(input, output, session) {
       }
     }
   )
-  second_clicked <-reactive({input$pop_two_selected})
-  
-
-  
-  output$tSNE_summary <- renderPlotly({
-    second_clicked()
+  second_clicked <-reactive({input$pop_two_selected
     g1 = tsne[ tsne$barcode %in% barcodes$Barcode[isolate({selected_vector1()})],]
     g2 = tsne[tsne$barcode %in% barcodes$Barcode[isolate({selected_vector2()})],]
+    list(g1, g2)})
+  
+  output$tSNE_summary <- renderPlotly({
+    groups <- second_clicked()
+    g1 <-  groups[[1]]
+    g2 <- groups[[2]]
     g1["group"] <- rep('group 1', dim(g1)[1])
     g2["group"] <- rep('group 2', dim(g2)[1])
     both_groups = rbind(g1, g2)
@@ -153,8 +151,34 @@ shinyServer(function(input, output, session) {
             key = ~barcode, source = "selection_plot_two") %>%
                layout(dragmode = "select",xaxis = list(range = c(-40,40)),
                       yaxis = list(range = c(-40,40)))
-        
     })
+  # histogram of cells -----------
+  output$cell_type_summary <- renderPlotly({
+    ax <- list(
+      title = "",
+      zeroline = FALSE,
+      showline = FALSE,
+      showticklabels = FALSE,
+      showgrid = FALSE
+    )
+    groups <- second_clicked()
+    g1 <-  groups[[1]]
+    g2 <- groups[[2]]
+    g1_cell_counts<-table(g1$id)
+    g2_cell_counts<-table(g2$id)
+    g1_cells <- rep.int(0, 6)
+    colnames(g1_cells) <- names(table(tsne$id))
+    print(dim(g1_cells))
+    print(dim(g2_cells))
+    cat(g1_cells)
+    print(g2_cells)
+    cell_names <- names(g1_cells)
+    data <- as.data.frame(rbind(g1_cells, g2_cells))
+    print(data)
+    plot_ly(data, x=~Var1, y=~g1_cells, type='bar', name = 'group 1') %>%
+      add_trace(y=~g2_cells, name = "group 2") %>%
+      layout( yaxis = list(title = 'Count'), barmode = 'group')
+  })
     
   
 
