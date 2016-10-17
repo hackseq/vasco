@@ -53,6 +53,9 @@ plot_geneExpr <- function(gene_of_interest, gene_name, input_midplot=1,
       barcode = barcodes$Barcode,
       expr = expression[gene_of_interest,]) %>%
     tbl_df()
+
+  input_midplot <- max(gene_expr$expr)*input_midplot
+
   ## Join with tSNE
   tsne1 <-
     left_join(tsne, gene_expr, by="barcode")
