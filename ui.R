@@ -75,8 +75,10 @@ shinyUI(
                                                                      label = 'Predefined clusters:',
                                                                      choices = unique(tsne$id))
                                              ),
-                                             actionButton(inputId = "reload", label = "Select new groups"),
-                                             downloadButton(outputId = 'downloadDifGenes', label = 'Download'))),
+                                             downloadButton(outputId = 'downloadDifGenes', label = 'Download'),
+                                             br(),
+                                             br(),
+                                             actionButton(inputId = "reload", label = "Select new groups"))),
                          column(10,
                          div(id= "div_select_one", plotlyOutput('tSNE_select_one',height = '600px')),
                          div(id = "div_select_two", plotlyOutput('tSNE_select_two',height = '600px')),
