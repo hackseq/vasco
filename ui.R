@@ -16,7 +16,7 @@ library(shinythemes)
 
 # Define UI for application that draws a histogram
 shinyUI(
-  fluidPage(theme = shinytheme('cosmo'),
+  fluidPage(theme = shinytheme('lumen'),
   useShinyjs(),
   extendShinyjs(text = "shinyjs.refresh = function() { redir_Str = window.location.href.split('?')[0] + '?compare'; window.location.href = redir_Str ; }"),
   # Application title
@@ -56,9 +56,15 @@ shinyUI(
                                               colourInput("colmin", "Select minimum colour", value = geneExpr_colorMin)
                                             )
                                           )
-
                                ),
-                        column(8, uiOutput("geneExprPlot"), plotlyOutput("geneExprGeneCluster"))
+                        conditionalPanel(
+                          condition = "input.checkVisualization == 1",
+                          column(8, uiOutput("geneExprPlot"))
+                        ),
+                        conditionalPanel(
+                          condition = "input.checkVisualization == 2",
+                          column(8, plotlyOutput("geneExprGeneCluster"))
+                        )
                ),
                # exploration of selection
                tabPanel( 'Compare',
