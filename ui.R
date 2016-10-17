@@ -18,6 +18,31 @@ library(shinythemes)
 shinyUI(
   fluidPage(theme = shinytheme('lumen'),
   useShinyjs(),
+
+  tags$head(
+    tags$style(HTML("
+                  p, li {
+                    /**font-family: 'Lora', 'Times New Roman', serif;**/
+                    font-size: 20px;
+                    color: #404040;
+                    line-height: 1.2;
+                  }
+                  li {
+                    font-size: 16px;
+                  }
+                  body {
+                    padding: 0 2.5em 0 2.5em;
+                  }
+                    li p {
+                    margin: 0;
+                    padding: 0.1em;
+                  }
+                    p + ul {
+                    margin-top: -10px;
+                  }
+                    "))
+    ),
+
   extendShinyjs(text = "shinyjs.refresh = function() { redir_Str = window.location.href.split('?')[0] + '?compare'; window.location.href = redir_Str ; }"),
   # Application title
   titlePanel("Single cell vis"),
@@ -80,7 +105,7 @@ shinyUI(
                          id= 'Compare',
                          column(3,
                                 wellPanel(tabsetPanel(id = 'compareOrSet',
-                                                      tabPanel('Compare Clusters',
+                                                      tabPanel('Compare',
                                                                h4(id = "select_text", "Please select first group"),
                                                                actionButton(inputId = "pop_one_selected", label = "Save group 1"),
                                                                actionButton(inputId = "pop_two_selected", label = "Save group 2"),
@@ -97,7 +122,7 @@ shinyUI(
                                                                br(),
                                                                br(),
                                                                actionButton(inputId = "reload", label = "Select new groups")),
-                                                      tabPanel('Set clusters',
+                                                      tabPanel('Create',
                                                                textInput(inputId = 'newClusterName',label  ='New name'),
                                                                h4(id = 'selectTextForRename', 'Please select group to rename'),
                                                                actionButton(inputId = 'renamePoulationButton',label = 'Rename Selection'),

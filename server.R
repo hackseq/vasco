@@ -126,7 +126,7 @@ shinyServer(function(input, output, session) {
 
 
   # code for setting the clusters -----
-  
+
   observe({
     if(input$selectDefinedGroupForRename){
       show(id = 'whichGroupsForRename')
@@ -135,7 +135,7 @@ shinyServer(function(input, output, session) {
       hide(id = 'whichGroupsForRename')
     }
   })
-  
+
   observe({
     print(input$renamePoulationButton)
   })
@@ -149,11 +149,11 @@ shinyServer(function(input, output, session) {
           tsneSubset = rValues$tsne[rValues$tsne$id %in% input$whichGroupsForRename,]
         }
         out = tsneSubset$barcode
-        
+
         print('setting tsne ids')
-        
+
         rValues$tsne[rValues$tsne$barcode %in% out,'id'] = input$newClusterName
-        
+
         # update everything that uses old clusters
         updateCheckboxGroupInput(session,
                                  inputId = 'whichGroups',
@@ -166,7 +166,7 @@ shinyServer(function(input, output, session) {
     })
   }
 })
-  
+
   # do I want to select defined groups?------
   observe({
     if(input$selectDefinedGroup){
@@ -284,7 +284,7 @@ shinyServer(function(input, output, session) {
       dg_mat$gene <- factor(dg_mat$gene, levels = dg_mat$gene)
       dimensions= ceiling(sqrt(length(dg_mat$gene %>% unique)))
       ggplot(dg_mat, aes(x=group, y=expr, fill=group)) + geom_boxplot() +
-        labs(y="log2(gene expression + 0.1)", x="Group") + 
+        labs(y="log2(gene expression + 0.1)", x="Group") +
         facet_wrap(~gene, scales="free_x", nrow=dimensions, ncol=dimensions) +
         theme(plot.margin = unit(c(0, 0, 0, 3), "lines"),
               panel.margin.y = unit(1, "lines"),
