@@ -28,10 +28,6 @@ shinyServer(function(input, output, session) {
 
   observe({if ('?compare' ==query_vals()){updateTabsetPanel(session, inputId = 'main_panel', 'Compare') }})
 
-  # debugging output, modify at will -----
-  output$debug <- renderPrint({
-    #tsne[tsne$barcode %in% rownames(expression)[selected_vector1()],]
-  })
 
   # main SNE plot ---------
   output$tSNEPlot <- renderPlotly({

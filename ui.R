@@ -17,8 +17,6 @@ shinyUI(
   fluidPage(
   useShinyjs(),
   extendShinyjs(text = "shinyjs.refresh = function() { redir_Str = window.location.href.split('?')[0] + '?compare'; window.location.href = redir_Str ; }"),
-  # debug output change it at will
-  verbatimTextOutput("debug"),
   # Application title
   titlePanel("Single cell vis"),
   tabsetPanel( id = "main_panel",
