@@ -280,8 +280,8 @@ shinyServer(function(input, output, session) {
     g2_cell_counts<-table(g2$id) - 1
     cell_names <- names(g1_cell_counts)
     data <- as.data.frame(rbind(g1_cell_counts, g2_cell_counts))
-    plot_ly(data, x=cell_names, y=~g1_cell_counts, type='bar', name = 'group 1') %>%
-      add_trace(y=~g2_cell_counts, name = "group 2") %>%
+    plot_ly(data, x=cell_names, y=~g1_cell_counts, marker = list(color = 'rgb(10,10,10)'), type='bar', name = 'group 1') %>%
+      add_trace(y=~g2_cell_counts, marker = list(color = 'rgb(40,40,70)'), name = "group 2") %>%
       layout( yaxis = list(title = 'Count'), barmode = 'group')
   })
 
