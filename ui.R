@@ -10,7 +10,7 @@
 library(shiny)
 library(shinyjs)
 library(plotly)
-
+library(colourpicker)
 
 # Define UI for application that draws a histogram
 shinyUI(
@@ -48,8 +48,10 @@ shinyUI(
                                             conditionalPanel(
                                               condition = "input.checkVisualization == 1",
                                               sliderInput("MinMax", label= h5("Range of expression:"), min = 0, max = 1, value = c(0,1), step= 0.02),
-                                              sliderInput("Midpoint", label= h5("Midpoint:"), min = 0, max = 1, value = 0.5, step= 0.02)
-                                               #numericInput("Midpoint", label = h3("Midpoint"), value = 1)
+                                              sliderInput("Midpoint", label= h5("Midpoint:"), min = 0, max = 1, value = 0.5, step= 0.02),
+                                              colourInput("colmin", "Select minimum colour", value = "grey"),
+                                              colourInput("colmid", "Select midpoint colour", value = "white"),
+                                              colourInput("colmax", "Select maximum colour", value = "red")
                                             )
                                           )
 
@@ -68,7 +70,7 @@ shinyUI(
                          column(8,
                          div(id= "div_select_one", plotlyOutput('tSNE_select_one')),
                          div(id = "div_select_two", plotlyOutput('tSNE_select_two')),
-                         div(id= 'comparisonOutput', dataTableOutput('difGeneTable'), 
+                         div(id= 'comparisonOutput', dataTableOutput('difGeneTable'),
                              plotlyOutput('tSNE_summary'), plotlyOutput('histPlot'))
                          ))
                )

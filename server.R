@@ -303,7 +303,7 @@ shinyServer(function(input, output, session) {
       output[[plotname]] <- renderPlotly({
         gene_of_interest <- parse_gene_input(geneExpr_genes()[my_i])
         gene_name <- parse_gene_input(geneExpr_genes()[my_i], get="name")
-        plot_geneExpr(gene_of_interest, gene_name, input_midplot=input$Midpoint)
+        plot_geneExpr(gene_of_interest, gene_name, input_midplot=input$Midpoint, color_low = input$colmin, color_mid = input$colmid, color_high = input$colmax)
       })
     })
   }
