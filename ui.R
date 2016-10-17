@@ -18,7 +18,7 @@ library(shinythemes)
 shinyUI(
   fluidPage(theme = shinytheme('lumen'),
   useShinyjs(),
-  img(src='Vasco_2.png', align = "left", height=120),
+  img(src='Vasco_2.png', align = "left", height=100),
   hr(),
   tags$head(
     tags$style(HTML("
