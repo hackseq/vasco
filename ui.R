@@ -86,7 +86,7 @@ shinyUI(
                              tabsetPanel(tabPanel('histPlot',
                                                   plotlyOutput('histPlot')),
                                          tabPanel('tSNE plot',
-                                                  plotlyOutput('tSNE_summary')))
+                                                  plotlyOutput('tSNE_summary'), plotlyOutput('cell_type_summary')))
                              )
                          ))
                )

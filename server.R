@@ -244,8 +244,13 @@ shinyServer(function(input, output, session) {
                layout(dragmode = "select",xaxis = list(range = c(-40,40)),
                       yaxis = list(range = c(-40,40)))
     })
+  
   # histogram of cells -----------
   output$cell_type_summary <- renderPlotly({
+    tsne_id <- table(tsne$id)
+    categories<- dim(tsne_id)
+    dummy = data.frame(rep('AAAAAAAAAAAA', 8), rep(1.0, 8), rep(1.0, 8), names(tsne_id))
+    names(dummy) = names(tsne)
     ax <- list(
       title = "",
       zeroline = FALSE,
@@ -253,22 +258,17 @@ shinyServer(function(input, output, session) {
       showticklabels = FALSE,
       showgrid = FALSE
     )
-    groups <- second_clicked()
-    g1 <-  groups[[1]]
-    g2 <- groups[[2]]
-    g1_cell_counts<-table(g1$id)
-    g2_cell_counts<-table(g2$id)
-    g1_cells <- rep.int(0, 6)
-    colnames(g1_cells) <- names(table(tsne$id))
-    print(dim(g1_cells))
-    print(dim(g2_cells))
-    cat(g1_cells)
-    print(g2_cells)
-    cell_names <- names(g1_cells)
-    data <- as.data.frame(rbind(g1_cells, g2_cells))
-    print(data)
-    plot_ly(data, x=~Var1, y=~g1_cells, type='bar', name = 'group 1') %>%
-      add_trace(y=~g2_cells, name = "group 2") %>%
+    groups <- second_clicked_eds()
+    g1 <-  rbind(groups[[1]], dummy)
+    g2 <-  rbind(groups[[2]], dummy)
+    
+    g1_cell_counts<-table(g1$id) - 1
+    g2_cell_counts<-table(g2$id) - 1
+    print(g1_cell_counts)
+    cell_names <- names(g1_cell_counts)
+    data <- as.data.frame(rbind(g1_cell_counts, g2_cell_counts))
+    plot_ly(data, x=cell_names, y=~g1_cell_counts, type='bar', name = 'group 1') %>%
+      add_trace(y=~g2_cell_counts, name = "group 2") %>%
       layout( yaxis = list(title = 'Count'), barmode = 'group')
   })
     
