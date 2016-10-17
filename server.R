@@ -181,8 +181,11 @@ shinyServer(function(input, output, session) {
       nbr_barcodes <- nbr_group1 + nbr_group2
       
       diff_genes <- differentiallyExpressed()$`Gene Symbol`
+      if(is.null(input$difGeneTable_rows_selected)){
       gene_idx <- c(1:gene_cnt, (length(diff_genes)-gene_cnt+1):length(diff_genes))
-      
+      } else{
+        gene_idx = input$difGeneTable_rows_selected
+      }
       dg_mat <- c()
       for ( n in gene_idx ) {
         gene_idx <- which(genes$Symbol == diff_genes[n])
