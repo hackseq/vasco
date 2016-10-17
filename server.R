@@ -181,7 +181,7 @@ shinyServer(function(input, output, session) {
   observe({
     if(!is.null(input$difGeneTable_rows_selected)){
       gene = differentiallyExpressed()[input$difGeneTable_rows_selected,]$`Gene Symbol`
-      selectedGene = list_of_genesymbols[grepl(gene,list_of_genesymbols)]
+      selectedGene = list_of_genesymbols[grepl(paste0('^',gene,'_'),list_of_genesymbols)]
       updateSelectInput(session, 'input_genes', selected = selectedGene)
     }
   })
