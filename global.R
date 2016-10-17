@@ -11,6 +11,11 @@ tsne = read_tsv('Data/redstone_pbmc3k_tdf', skip= 1, col_name = c('barcode','tSN
 expression = readMM('Data/redstone_1_matrix.mtx')
 
 geneExpr_maxItems = 4
+geneExpr_colorMin = "grey99"
+geneExpr_colorMax = "red"
+geneExpr_colorMid <- "grey44"
+  #colorRampPalette(c(geneExpr_colorMin, geneExpr_colorMax))(4)[2]
+
 rownames(expression) = genes$ID
 colnames(expression) = barcodes$Barcode
 
@@ -46,9 +51,9 @@ parse_gene_input <- function(x, get="id"){
 }
 
 #' Draw geneExpr scatterplot
-plot_geneExpr <- function(gene_of_interest, gene_name, input_midplot=0.5,
-                          color_minval = 0, color_maxval = 1,
-                          color_low="grey44", color_mid="grey99", color_high="red"){
+plot_geneExpr <- function(gene_of_interest, gene_name,
+                          value_min = 0, value_max = 1, value_rangemid = 0.5,
+                          color_low = "grey99", color_mid= "grey44", color_high = "red"){
   gene_expr <-
     data.frame(
       barcode = barcodes$Barcode,
@@ -56,9 +61,9 @@ plot_geneExpr <- function(gene_of_interest, gene_name, input_midplot=0.5,
     tbl_df()
 
   max_expr <- max(gene_expr$expr)
-  minval <- max_expr*color_minval
-  maxval <- max_expr*color_maxval
-  midval <- (((maxval-minval)*input_midplot)+minval)
+  minval <- max_expr*value_min
+  maxval <- max_expr*value_max
+  midval <- (((maxval-minval)*value_rangemid)+minval)
 
   ## Join with tSNE
   tsne1 <-
