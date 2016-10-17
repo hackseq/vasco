@@ -40,17 +40,8 @@ shinyUI(
                                                            options = list(maxItems = geneExpr_maxItems),
                                                            selected = c('CD8A_ENSG00000153563'),
                                                            multiple = TRUE),
-                                            radioButtons("checkVisualization",
-                                                          label = h3("Plot types"),
-                                                          choices = list("tSNE heatmap" = 1,
-                                                          "Box plots" = 2),
-                                                           selected = 1),
-                                            conditionalPanel(
-                                              condition = "input.checkVisualization == 1 || input.checkVisualization == 2",
-                                              actionButton("exprGeneButton", "Visualize")
-                                            ),
-                                            conditionalPanel(
-                                              condition = "input.checkVisualization == 1",
+                                            actionButton("exprGeneButton", "Visualize"),
+                                            div(id = 'tsneHeatmapOptions',
                                               sliderInput("MinMax", label= h5("Adjust range of expression:"), min = 0, max = 1, value = c(0,1), step= 0.02),
                                               sliderInput("Midpoint", label= h5("Adjust midpoint of color scale:"), min = 0, max = 1, value = 0.5, step= 0.02),
                                               colourInput("colmax", "Select color of scale maximum", value = geneExpr_colorMax),
@@ -59,14 +50,12 @@ shinyUI(
                                             )
                                           )
                                ),
-                        conditionalPanel(
-                          condition = "input.checkVisualization == 1",
-                          column(8, uiOutput("geneExprPlot"))
-                        ),
-                        conditionalPanel(
-                          condition = "input.checkVisualization == 2",
-                          column(8, plotlyOutput("geneExprGeneCluster"))
-                        )
+                        column(8,
+                               tabsetPanel(id ='exprVis',
+                                           tabPanel('tSNE heatmap', value = 'tSNE',
+                                                    uiOutput("geneExprPlot")),
+                                           tabPanel('Box plots', value = 'box',
+                                                    plotlyOutput("geneExprGeneCluster"))))
                ),
                # exploration of selection
                tabPanel( 'Explore clusters',
