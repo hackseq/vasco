@@ -18,7 +18,8 @@ library(shinythemes)
 shinyUI(
   fluidPage(theme = shinytheme('lumen'),
   useShinyjs(),
-
+  img(src='Vasco_2.png', align = "left", height=120),
+  hr(),
   tags$head(
     tags$style(HTML("
                   p, li {
@@ -51,9 +52,10 @@ shinyUI(
     ),
 
   extendShinyjs(text = "shinyjs.refresh = function() { redir_Str = window.location.href.split('?')[0] + '?compare'; window.location.href = redir_Str ; }"),
+
   # Application title
-  titlePanel(h1("VASCO", id="title")),
-  p("Visualization App for Single Cells Overview", id="titledescript"),
+  titlePanel('VASCO'),
+  p("Visualization App for Single Cells explOration", id="titledescript"),
 
   tabsetPanel( id = "main_panel",
                # main panel for tSNE plot and group selection
