@@ -137,7 +137,11 @@ shinyServer(function(input, output, session) {
   })
   
   observe({
-    if(input$renamePoulationButton==1){
+    print(input$renamePoulationButton)
+  })
+  
+  observe({
+    if(input$renamePoulationButton>=1){
       isolate({
         if(!input$selectDefinedGroupForRename){
           tsneSubset = rValues$tsne[rValues$tsne$tSNE_1 %in% selected_data()$x & rValues$tsne$tSNE_2 %in% selected_data()$y,]
@@ -215,6 +219,7 @@ shinyServer(function(input, output, session) {
   second_clicked_eds <-reactive({input$pop_two_selected
     barcodes_1 <- barcodes$Barcode[isolate({rValues$selected_vector1})]
     barcodes_2<- barcodes$Barcode[isolate({rValues$selected_vector2})]
+    # isn't this kinda cheating?? two groups can intersect
     g1 = rValues$tsne[ rValues$tsne$barcode %in% barcodes_1 & !(rValues$tsne$barcode %in% barcodes_2),]
     g2 = rValues$tsne[rValues$tsne$barcode %in% barcodes_2  & !(rValues$tsne$barcode %in% barcodes_1),]
     intersection = rValues$tsne[ rValues$tsne$barcode %in% barcodes_2 & rValues$tsne$barcode %in% barcodes_1 ,]
@@ -319,25 +324,28 @@ shinyServer(function(input, output, session) {
 
   # histogram of cells -----------
   output$cell_type_summary <- renderPlotly({
-    tsne_id <- table(rValues$tsne$id)
-    categories<- dim(tsne_id)
-    #make dummy array of all types of tsne clusters so that tables() returns an entry for each type
-    dummy = data.frame(rep('AAAAAAAAAAAA', 8), rep(1.0, 8), rep(1.0, 8), names(tsne_id))
-    names(dummy) = names(rValues$tsne)
-    groups <- second_clicked_eds()
-    g1 <-  rbind(groups[[1]][c('barcode','tSNE_1',	'tSNE_2','id' )], dummy)
-    g2 <-  rbind(groups[[2]][c('barcode','tSNE_1',	'tSNE_2','id' )], dummy)
-    intersection <- rbind(groups[[3]][c('barcode','tSNE_1',	'tSNE_2','id' )], dummy)
-    #subtract 1 because we added an extra entry of each type in dummy array
-    #also need to add the intersection back into groups because they were taken out in second_clicked_eds
-    intersection_counts <- table(intersection$id) - 1
-    g1_cell_counts<-table(g1$id) - 1 + intersection_counts
-    g2_cell_counts<-table(g2$id) - 1 + intersection_counts
-    cell_names <- names(g1_cell_counts)
-    data <- as.data.frame(rbind(g1_cell_counts, g2_cell_counts))
-    plot_ly(data, x=cell_names, y=~g1_cell_counts, marker = list(color = 'rgb(140,0,0)'), type='bar', name = 'group 1') %>%
-      add_trace(y=~g2_cell_counts, marker = list(color = 'rgb(0,0,140)'), name = "group 2") %>%
-      layout( yaxis = list(title = 'Count'), barmode = 'group')
+    # group1 = rValues$tsne[rValues$tsne$barcode %in%  barcodes$Barcode[rValues$selected_vector1()]]
+    # 
+    # rValues$tsne rValues$selected_vector1()
+    # tsne_id <- table(rValues$tsne$id)
+    # categories<- dim(tsne_id)
+    # #make dummy array of all types of tsne clusters so that tables() returns an entry for each type
+    # dummy = data.frame(rep('AAAAAAAAAAAA', length(categories)), rep(1.0, length(categories)), rep(1.0, length(categories)), names(tsne_id))
+    # names(dummy) = names(rValues$tsne)
+    # groups <- second_clicked_eds()
+    # g1 <-  rbind(groups[[1]][c('barcode','tSNE_1',	'tSNE_2','id' )], dummy)
+    # g2 <-  rbind(groups[[2]][c('barcode','tSNE_1',	'tSNE_2','id' )], dummy)
+    # intersection <- rbind(groups[[3]][c('barcode','tSNE_1',	'tSNE_2','id' )], dummy)
+    # #subtract 1 because we added an extra entry of each type in dummy array
+    # #also need to add the intersection back into groups because they were taken out in second_clicked_eds
+    # intersection_counts <- table(intersection$id) - 1
+    # g1_cell_counts<-table(g1$id) - 1 + intersection_counts
+    # g2_cell_counts<-table(g2$id) - 1 + intersection_counts
+    # cell_names <- names(g1_cell_counts)
+    # data <- as.data.frame(rbind(g1_cell_counts, g2_cell_counts))
+    # plot_ly(data, x=cell_names, y=~g1_cell_counts, marker = list(color = 'rgb(140,0,0)'), type='bar', name = 'group 1') %>%
+    #   add_trace(y=~g2_cell_counts, marker = list(color = 'rgb(0,0,140)'), name = "group 2") %>%
+    #   layout( yaxis = list(title = 'Count'), barmode = 'group')
   })
 
 
@@ -381,20 +389,20 @@ shinyServer(function(input, output, session) {
 
 
   # histogram of cells -----------
-  output$countPerCluster <- renderPlotly({
-    ax <- list(
-      title = "",
-      zeroline = FALSE,
-      showline = FALSE,
-      showticklabels = FALSE,
-      showgrid = FALSE
-    )
-    NumCells<-table(rValues$tsne$id)
-    NumCells<-as.data.frame(NumCells)
-    plot_ly(NumCells, x=~Var1, y=~Freq, color=~Var1, type='bar') %>%
-      layout(xaxis = ax,
-             yaxis = list(title = "Number of cells"))
-  })
+  # output$countPerCluster <- renderPlotly({
+  #   ax <- list(
+  #     title = "",
+  #     zeroline = FALSE,
+  #     showline = FALSE,
+  #     showticklabels = FALSE,
+  #     showgrid = FALSE
+  #   )
+  #   NumCells<-table(rValues$tsne$id)
+  #   NumCells<-as.data.frame(NumCells)
+  #   plot_ly(NumCells, x=~Var1, y=~Freq, color=~Var1, type='bar') %>%
+  #     layout(xaxis = ax,
+  #            yaxis = list(title = "Number of cells"))
+  # })
 
   # plotting selected genes ----------
   # disable button when empty
