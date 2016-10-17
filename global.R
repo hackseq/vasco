@@ -87,12 +87,21 @@ plot_geneExpr <- function(gene_of_interest, gene_name,
 plot_geneExprGeneCluster <- function(gene_of_interest, gene_name){
   the_genes <- setNames(gene_name, gene_of_interest)
 
-  gene_expr <-
-    expression[names(the_genes),] %>%
-    as.matrix() %>%
-    t() %>%
-    as.data.frame() %>%
-    tibble::rownames_to_column("barcode")
+  if (length(gene_of_interest) == 1) {
+    gene_expr <-
+      data.frame(
+        barcode = barcodes$Barcode,
+        expr = expression[gene_of_interest,]) %>%
+      tbl_df()
+    colnames(gene_expr)[2] <- gene_of_interest
+  } else {
+    gene_expr <-
+      expression[names(the_genes),] %>%
+      as.matrix() %>%
+      t() %>%
+      as.data.frame() %>%
+      tibble::rownames_to_column("barcode")
+  }
   tsne1 <-
     left_join(tsne, gene_expr, by="barcode") %>%
     gather(gene, expr, starts_with("ENSG")) %>%
