@@ -368,9 +368,9 @@ shinyServer(function(input, output, session) {
   output$difGeneTable = renderDataTable({
     if(!is.null(differentiallyExpressed())){
       table = differentiallyExpressed()
-      table %<>% mutate(`Fold change` = format(`Fold change`, digits = 3,scientific=FALSE)) %>%
-        mutate(`group1 Expression` = format(`group1 Expression`, digits = 3,scientific=FALSE)) %>%
-        mutate(`group2 Expression` = format(`group2 Expression`, digits = 3,scientific=FALSE))
+      table %<>% mutate(`Fold change` = format(`Fold change`, digits=3, scientific=FALSE)) %>%
+        mutate(`Group 1 expression` = format(`Group 1 expression`, digits=3, scientific=FALSE)) %>%
+        mutate(`Group 2 expression` = format(`Group 2 expression`, digits=3, scientific=FALSE))
       datatable(table,selection = 'multiple')
     }
   })
