@@ -99,9 +99,12 @@ shinyUI(
                          div(id = "div_select_two", plotlyOutput('tSNE_select_two',height = '600px')),
                          dataTableOutput('difGeneTable'),
                          div(id= 'comparisonOutput',
-                             tabsetPanel(tabPanel('histPlot',
+
+                             tabsetPanel(tabPanel('Visualize genes',
+                                                  id = "histPlot",
                                                   plotlyOutput('histPlot', height = '500px')),
-                                         tabPanel('tSNE plot',
+                                         tabPanel('Visualize selected groups',
+                                                  id = 'tSNE plot',
                                                   plotlyOutput('tSNE_summary'), plotlyOutput('cell_type_summary')))
                              )
                          ))
