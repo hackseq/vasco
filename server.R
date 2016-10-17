@@ -207,6 +207,8 @@ shinyServer(function(input, output, session) {
   geneExpr_genes <- reactive({
     # Take a dependency on input$goButton
     input$exprGeneButton
+    input$difGeneTable_rows_selected
+    print('drawing gene plots')
 
     isolate(input$input_genes)
     })
