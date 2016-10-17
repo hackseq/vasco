@@ -268,8 +268,10 @@ shinyServer(function(input, output, session) {
     }
     plot_ly(all_groups, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~group, colors = colours,
              key = ~barcode, source = "selection_plot_two") %>%
-              layout(dragmode = "select",xaxis = list(range = c(-40,40)),
-                      yaxis = list(range = c(-40,40)))
+              layout(dragmode = "select",
+                     xaxis = list(range = c(-40,40), title=tsne_xlab),
+                     yaxis = list(range = c(-40,40), title=tsne_ylab)
+                     )
     })
 
   # histogram of cells -----------
@@ -319,7 +321,7 @@ shinyServer(function(input, output, session) {
     if(!is.null(differentiallyExpressed())){
       table = differentiallyExpressed()
       table %<>% mutate(`Fold change` = format(`Fold change`, digits = 3,scientific=FALSE)) %>%
-        mutate(`group1 Expression` = format(`group1 Expression`, digits = 3,scientific=FALSE)) %>% 
+        mutate(`group1 Expression` = format(`group1 Expression`, digits = 3,scientific=FALSE)) %>%
         mutate(`group2 Expression` = format(`group2 Expression`, digits = 3,scientific=FALSE))
       datatable(table,selection = 'multiple')
     }
@@ -378,7 +380,7 @@ shinyServer(function(input, output, session) {
     # to display properly.
     do.call(tagList, plot_output_list)
   })
-  
+
   observe({
     if(!input$exprVis == 'tSNE'){
       hide('tsneHeatmapOptions')
