@@ -69,6 +69,7 @@ shinyServer(function(input, output, session) {
   hide(id="comparisonOutput")
   hide(id = 'downloadDifGenes')
   hide(id="reload")
+  hide(id = )
   })
 
 
@@ -105,6 +106,53 @@ shinyServer(function(input, output, session) {
     show('histPlot')
     show("reload")
   })
+  
+  #output$newPlot <- renderPlotly({
+   # input$pop_selected
+    #new_tsne <- isolate(selected_data())
+    #plot_ly(new_tsne, x = ~x, y = ~y, text = ~key) %>%
+     # layout(dragmode = "select")})
+  
+  
+  # do I want to select defined groups?------
+  observe({
+    if(input$selectDefinedGroup){
+      show(id = 'whichGroups')
+    } else{
+      updateCheckboxGroupInput(session, inputId = 'whichGroups', choices = unique(tsne$id), selected = NULL)
+      hide(id = 'whichGroups')
+    }
+  })
+
+  observe({
+    if(input$pop_one_selected==1){
+      isolate({
+        tsneSubset = tsne[tsne$tSNE_1 %in% selected_data()$x & tsne$tSNE_2 %in% selected_data()$y,]
+        rValues$selected_vector1 = barcodes$Barcode %in% tsneSubset$barcode
+      })
+    }
+  })
+  
+  observe({
+    hide('div_select_two')
+    if(input$pop_two_selected == 1){
+      isolate({
+        if(!is.null(selected_data_two())){
+          tsneSubset = tsne[tsne$tSNE_1 %in% selected_data_two()$x & tsne$tSNE_2 %in% selected_data_two()$y,]
+          out = barcodes$Barcode %in% tsneSubset$barcode
+        } else {
+          # if nothing is selected, select the negative set based on tsne
+          out = barcodes$Barcode %in% tsne$barcode[!tsne$barcode %in% barcodes$Barcode[rValues$selected_vector1]]
+        }
+        rValues$selected_vector2 = out
+      })
+    }
+  })
+
+
+  second_clicked <-reactive({input$pop_two_selected})
+  
+  
   
   # Once group 1 and group 2 of cells are selected,
   # create 10 boxplots showing the gene expression distributions
@@ -160,40 +208,6 @@ shinyServer(function(input, output, session) {
       plotly_empty()
     }
   })
-  
-  #output$newPlot <- renderPlotly({
-   # input$pop_selected
-    #new_tsne <- isolate(selected_data())
-    #plot_ly(new_tsne, x = ~x, y = ~y, text = ~key) %>%
-     # layout(dragmode = "select")})
-
-  observe({
-    if(input$pop_one_selected==1){
-      isolate({
-        tsneSubset = tsne[tsne$tSNE_1 %in% selected_data()$x & tsne$tSNE_2 %in% selected_data()$y,]
-        rValues$selected_vector1 = barcodes$Barcode %in% tsneSubset$barcode
-      })
-    }
-  })
-  
-  observe({
-    hide('div_select_two')
-    if(input$pop_two_selected == 1){
-      isolate({
-        if(!is.null(selected_data_two())){
-          tsneSubset = tsne[tsne$tSNE_1 %in% selected_data_two()$x & tsne$tSNE_2 %in% selected_data_two()$y,]
-          out = barcodes$Barcode %in% tsneSubset$barcode
-        } else {
-          # if nothing is selected, select the negative set based on tsne
-          out = barcodes$Barcode %in% tsne$barcode[!tsne$barcode %in% barcodes$Barcode[rValues$selected_vector1]]
-        }
-        rValues$selected_vector2 = out
-      })
-    }
-  })
-
-
-  second_clicked <-reactive({input$pop_two_selected})
   
 
   
