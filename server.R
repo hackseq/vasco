@@ -258,10 +258,17 @@ shinyServer(function(input, output, session) {
     g1["group"] <- rep('group 1', dim(g1)[1])
     g2["group"] <- rep('group 2', dim(g2)[1])
     intersection["group"] <- rep('both', dim(intersection)[1])
-    all_groups = rbind( g1, g2, intersection)
-    plot_ly(all_groups, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~group, colors = c("purple", "dark blue", "dark red"),
-            key = ~barcode, source = "selection_plot_two") %>%
-               layout(dragmode = "select",xaxis = list(range = c(-40,40)),
+    if (dim(intersection)[1] == 0){
+      all_groups = rbind(g2, g1)
+      colours = c("dark red", "dark blue")
+    }
+    else{
+      all_groups = rbind(g2, intersection, g1)
+      colours = c("purple", "dark red", "dark blue")
+    }
+    plot_ly(all_groups, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~group, colors = colours,
+             key = ~barcode, source = "selection_plot_two") %>%
+              layout(dragmode = "select",xaxis = list(range = c(-40,40)),
                       yaxis = list(range = c(-40,40)))
     })
 
@@ -275,13 +282,16 @@ shinyServer(function(input, output, session) {
     groups <- second_clicked_eds()
     g1 <-  rbind(groups[[1]][c('barcode','tSNE_1',	'tSNE_2','id' )], dummy)
     g2 <-  rbind(groups[[2]][c('barcode','tSNE_1',	'tSNE_2','id' )], dummy)
+    intersection <- rbind(groups[[3]][c('barcode','tSNE_1',	'tSNE_2','id' )], dummy)
     #subtract 1 because we added an extra entry of each type in dummy array
-    g1_cell_counts<-table(g1$id) - 1
-    g2_cell_counts<-table(g2$id) - 1
+    #also need to add the intersection back into groups because they were taken out in second_clicked_eds
+    intersection_counts <- table(intersection$id) - 1
+    g1_cell_counts<-table(g1$id) - 1 + intersection_counts
+    g2_cell_counts<-table(g2$id) - 1 + intersection_counts
     cell_names <- names(g1_cell_counts)
     data <- as.data.frame(rbind(g1_cell_counts, g2_cell_counts))
-    plot_ly(data, x=cell_names, y=~g1_cell_counts, marker = list(color = 'rgb(10,10,10)'), type='bar', name = 'group 1') %>%
-      add_trace(y=~g2_cell_counts, marker = list(color = 'rgb(40,40,70)'), name = "group 2") %>%
+    plot_ly(data, x=cell_names, y=~g1_cell_counts, marker = list(color = 'rgb(140,0,0)'), type='bar', name = 'group 1') %>%
+      add_trace(y=~g2_cell_counts, marker = list(color = 'rgb(0,0,140)'), name = "group 2") %>%
       layout( yaxis = list(title = 'Count'), barmode = 'group')
   })
 
@@ -363,6 +373,14 @@ shinyServer(function(input, output, session) {
     # Convert the list to a tagList - this is necessary for the list of items
     # to display properly.
     do.call(tagList, plot_output_list)
+  })
+  
+  observe({
+    if(!input$exprVis == 'tSNE'){
+      hide('tsneHeatmapOptions')
+    } else{
+      show('tsneHeatmapOptions')
+    }
   })
 
   # Call renderPlot for each one. Plots are only actually generated when they
