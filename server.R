@@ -21,6 +21,8 @@ source('difGenes.R')
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
+  rValues = reactiveValues(selected_vector1 = NULL,
+                           selected_vector2 = NULL)
 
   #check if came from previous compare tab
   query_vals <- reactive({session$clientData$url_search
@@ -28,10 +30,6 @@ shinyServer(function(input, output, session) {
 
   observe({if ('?compare' ==query_vals()){updateTabsetPanel(session, inputId = 'main_panel', 'Compare') }})
 
-  # debugging output, modify at will -----
-  output$debug <- renderPrint({
-    #tsne[tsne$barcode %in% rownames(expression)[selected_vector1()],]
-  })
 
   # main SNE plot ---------
   output$tSNEPlot <- renderPlotly({
@@ -53,8 +51,9 @@ shinyServer(function(input, output, session) {
   selected_data_two <- reactive({event_data("plotly_selected", source = "selection_plot_two")})
 
   #shows the button when first population selected in plot
-  observeEvent(selected_data(),{
-    if(is.null(selected_data()) | is.null(dim(selected_data()))){
+  observe({
+    if((((is.null(selected_data()) | is.null(dim(selected_data()))) & !input$selectDefinedGroup) | 
+       input$selectDefinedGroup & length(input$whichGroups)==0) | !is.null(rValues$selected_vector1)){
       disable("pop_one_selected")
     } else{
       enable('pop_one_selected')
@@ -101,49 +100,142 @@ shinyServer(function(input, output, session) {
     html(id = "select_text", "Loading...")
     disable(id = "pop_two_selected")
     show('comparisonOutput')
+    show('histPlot')
     show("reload")
   })
-
-
+  
   #output$newPlot <- renderPlotly({
    # input$pop_selected
     #new_tsne <- isolate(selected_data())
     #plot_ly(new_tsne, x = ~x, y = ~y, text = ~key) %>%
      # layout(dragmode = "select")})
+  
+  
+  # do I want to select defined groups?------
+  observe({
+    if(input$selectDefinedGroup){
+      show(id = 'whichGroups')
+    } else{
+      updateCheckboxGroupInput(session, inputId = 'whichGroups', choices = unique(tsne$id), selected = NULL)
+      hide(id = 'whichGroups')
+    }
+  })
 
-
-  selected_vector1 = reactive(
-    {input$pop_one_selected
+  observe({
+    if(input$pop_one_selected==1){
       isolate({
-        tsneSubset = tsne[tsne$tSNE_1 %in% selected_data()$x & tsne$tSNE_2 %in% selected_data()$y,]
-        barcodes$Barcode %in% tsneSubset$barcode
-      })})
-
-  selected_vector2 = reactive(
-    {
+        updateCheckboxInput(session, inputId = 'selectDefinedGroup',
+                            value = F,
+                            label = 'Select defined groups?')
+        print('group1 selection attempt')
+        if(!input$selectDefinedGroup){
+          tsneSubset = tsne[tsne$tSNE_1 %in% selected_data()$x & tsne$tSNE_2 %in% selected_data()$y,]
+        } else{
+          tsneSubset = tsne[tsne$id %in% input$whichGroups,]
+        }
+        rValues$selected_vector1 = barcodes$Barcode %in% tsneSubset$barcode
+      })
+    }
+  })
+  
+  observe({
+    if(input$pop_two_selected == 1){
       hide('div_select_two')
-      if(input$pop_two_selected == 1){
-        isolate({
+      hide(id = 'definedInputSelection')
+      isolate({
+        if(!input$selectDefinedGroup){
           if(!is.null(selected_data_two())){
             tsneSubset = tsne[tsne$tSNE_1 %in% selected_data_two()$x & tsne$tSNE_2 %in% selected_data_two()$y,]
-            barcodes$Barcode %in% tsneSubset$barcode
+            out = barcodes$Barcode %in% tsneSubset$barcode
           } else {
             # if nothing is selected, select the negative set based on tsne
-            barcodes$Barcode %in% tsne$barcode[!tsne$barcode %in% barcodes$Barcode[selected_vector1()]]
+            out = barcodes$Barcode %in% tsne$barcode[!tsne$barcode %in% barcodes$Barcode[rValues$selected_vector1]]
           }
-        })
-      }
+        } else{
+          tsneSubset = tsne[tsne$id %in% input$whichGroups,]
+          out = barcodes$Barcode %in% tsneSubset$barcode
+        }
+        rValues$selected_vector2 = out
+      })
     }
-  )
-  second_clicked <-reactive({input$pop_two_selected
-    g1 = tsne[ tsne$barcode %in% barcodes$Barcode[isolate({selected_vector1()})],]
-    g2 = tsne[tsne$barcode %in% barcodes$Barcode[isolate({selected_vector2()})],]
+  })
+  
+  second_clicked_eds <-reactive({input$pop_two_selected
+    g1 = tsne[ tsne$barcode %in% barcodes$Barcode[isolate({rValues$selected_vector1})],]
+    g2 = tsne[tsne$barcode %in% barcodes$Barcode[isolate({rValues$selected_vector2})],]
     list(g1, g2)})
   
+
+
+
+  second_clicked <-reactive({input$pop_two_selected})
+  
+  
+  
+  # Once group 1 and group 2 of cells are selected,
+  # create 10 boxplots showing the gene expression distributions
+  # of group 1 and group 2 for the top 10 up-regulated and
+  # top 10 down-regulated genes
+  output$histPlot <- renderPlotly({
+    if ( !is.null(differentiallyExpressed()) ) {
+      gene_cnt <- 10
+      
+      nbr_group1 <- sum(rValues$selected_vector1)
+      nbr_group2 <- sum(rValues$selected_vector2)
+      nbr_barcodes <- nbr_group1 + nbr_group2
+      
+      diff_genes <- differentiallyExpressed()$`Gene Symbol`
+      if(is.null(input$difGeneTable_rows_selected)){
+      gene_idx <- c(1:gene_cnt, (length(diff_genes)-gene_cnt+1):length(diff_genes))
+      } else{
+        gene_idx = input$difGeneTable_rows_selected
+      }
+      dg_mat <- c()
+      for ( n in gene_idx ) {
+        gene_idx <- which(genes$Symbol == diff_genes[n])
+        dat1 <- log2(expression[gene_idx, rValues$selected_vector1] + 0.1)
+        dat2 <- log2(expression[gene_idx, rValues$selected_vector2] + 0.1)
+        
+        dg_mat <- rbind(dg_mat, 
+                        data.frame(gene = diff_genes[n],
+                                   expr = c(dat1, dat2),
+                                   group = c(rep("1", nbr_group1),
+                                             rep("2", nbr_group2)),
+                                   panel = rep(n, nbr_barcodes)
+                        )
+        )
+      }
+      
+      # dg_mat %>% mutate(
+      #   gene = as.factor(gene),
+      #   expr = as.numeric(expr),
+      #   group = as.factor(group),
+      #   panel = as.factor(panel)) %>%
+      dg_mat <- 
+        dg_mat %>% mutate(
+          gene = as.character(gene),
+          expr = as.numeric(expr),
+          group = as.factor(group),
+          panel = as.factor(panel)) %>%
+        arrange(panel)
+      
+      dg_mat$gene <- factor(dg_mat$gene, levels = dg_mat$gene)
+      ggplot(dg_mat, aes(x=group, y=expr, fill=group)) +
+        geom_boxplot() +
+        facet_wrap(~gene, scales="free_x",
+                   nrow=2, ncol=gene_cnt)
+      ggplotly()
+    } else {
+      plotly_empty()
+    }
+  })
+  
+
+  
   output$tSNE_summary <- renderPlotly({
-    groups <- second_clicked()
-    g1 <-  groups[[1]]
-    g2 <- groups[[2]]
+    groups <- second_clicked_eds()
+    g1 = groups[[1]]
+    g2 = groups[[2]]
     g1["group"] <- rep('group 1', dim(g1)[1])
     g2["group"] <- rep('group 2', dim(g2)[1])
     both_groups = rbind(g1, g2)
@@ -192,24 +284,24 @@ shinyServer(function(input, output, session) {
   differentiallyExpressed = reactive({
     print('should I calculate dif genes?')
       print('yeah I guess')
-      if(!is.null(selected_vector2()) & !is.null(selected_vector1())){
+      if(!is.null(rValues$selected_vector2) & !is.null(rValues$selected_vector1)){
         show('downloadDifGenes')
-        difGenes(group1 = isolate(selected_vector1()),
-                 group2 = selected_vector2())
+        difGenes(group1 = isolate(rValues$selected_vector1),
+                 group2 = rValues$selected_vector2)
       }
   })
 
 
   output$difGeneTable = renderDataTable({
     if(!is.null(differentiallyExpressed())){
-      datatable(differentiallyExpressed(),selection = 'single')
+      datatable(differentiallyExpressed(),selection = 'multiple')
     }
   })
   # if a gene is selected from the data table, select that gene in the expression window
   observe({
     if(!is.null(input$difGeneTable_rows_selected)){
       gene = differentiallyExpressed()[input$difGeneTable_rows_selected,]$`Gene Symbol`
-      selectedGene = list_of_genesymbols[grepl(gene,list_of_genesymbols)]
+      selectedGene = list_of_genesymbols[grepl(regexMerge(paste0('^',gene,'_')),list_of_genesymbols)]
       updateSelectInput(session, 'input_genes', selected = selectedGene)
     }
   })
@@ -232,9 +324,20 @@ shinyServer(function(input, output, session) {
   })
 
   # plotting selected genes ----------
+  # disable button when empty
+  observe({
+    if(length(input$input_genes)==0 ){
+      disable('exprGeneButton')
+    }else{
+      enable('exprGeneButton')
+    }
+  })
+  
   geneExpr_genes <- reactive({
     # Take a dependency on input$goButton
     input$exprGeneButton
+    input$difGeneTable_rows_selected
+    print('drawing gene plots')
 
     isolate(input$input_genes)
     })
@@ -261,10 +364,11 @@ shinyServer(function(input, output, session) {
       output[[plotname]] <- renderPlotly({
         gene_of_interest <- parse_gene_input(geneExpr_genes()[my_i])
         gene_name <- parse_gene_input(geneExpr_genes()[my_i], get="name")
-        plot_geneExpr(gene_of_interest, gene_name, input_midplot=input$Midpoint)
+        plot_geneExpr(gene_of_interest, gene_name, input_midplot=input$Midpoint, color_low = input$colmin, color_mid = input$colmid, color_high = input$colmax)
       })
     })
   }
 
-})
+}
+)
 

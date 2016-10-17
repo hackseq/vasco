@@ -3,6 +3,7 @@ library(dplyr)
 library(Matrix)
 library(plotly)
 library(magrittr)
+source('regexMerge.R')
 
 barcodes = read_tsv('Data/redstone_1_barcodes.tsv', col_names = 'Barcode')
 genes = read_tsv('Data/redstone_1_genes.tsv',col_names = c('ID','Symbol'))

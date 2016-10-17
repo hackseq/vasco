@@ -10,15 +10,15 @@
 library(shiny)
 library(shinyjs)
 library(plotly)
+library(colourpicker)
+library(shinythemes)
 
 
 # Define UI for application that draws a histogram
 shinyUI(
-  fluidPage(
+  fluidPage(theme = shinytheme('cosmo'),
   useShinyjs(),
   extendShinyjs(text = "shinyjs.refresh = function() { redir_Str = window.location.href.split('?')[0] + '?compare'; window.location.href = redir_Str ; }"),
-  # debug output change it at will
-  verbatimTextOutput("debug"),
   # Application title
   titlePanel("Single cell vis"),
   tabsetPanel( id = "main_panel",
@@ -38,14 +38,25 @@ shinyUI(
                                                            options = list(maxItems = geneExpr_maxItems),
                                                            selected = c('CD8A_ENSG00000153563'),
                                                            multiple = TRUE),
-                                            checkboxGroupInput("checkVisualization",
+                                            radioButtons("checkVisualization",
                                                           label = h3("Visualizations"),
                                                           choices = list("tSNE gene expression heatmap" = 1,
                                                           "Histograms" = 2),
                                                            selected = 1),
-                                            numericInput("Midpoint", label = h3("Midpoint"), value = 1)
-                                          ),
-                               actionButton("exprGeneButton", "Plot expression data")
+                                            conditionalPanel(
+                                              condition = "input.checkVisualization == 1 || input.checkVisualization == 2",
+                                              actionButton("exprGeneButton", "Plot expression data")
+                                            ),
+                                            conditionalPanel(
+                                              condition = "input.checkVisualization == 1",
+                                              sliderInput("MinMax", label= h5("Range of expression:"), min = 0, max = 1, value = c(0,1), step= 0.02),
+                                              sliderInput("Midpoint", label= h5("Midpoint:"), min = 0, max = 1, value = 0.5, step= 0.02),
+                                              colourInput("colmin", "Select minimum colour", value = "grey"),
+                                              colourInput("colmid", "Select midpoint colour", value = "white"),
+                                              colourInput("colmax", "Select maximum colour", value = "red")
+                                            )
+                                          )
+
                                ),
                         column(8, uiOutput("geneExprPlot"))
                ),
@@ -56,12 +67,27 @@ shinyUI(
                                              actionButton(inputId = "pop_one_selected", label = "Save group one"),
                                              actionButton(inputId = "pop_two_selected", label = "Save group two"),
                                              br(),
+                                             div( id = 'definedInputSelection',
+                                                  checkboxInput(inputId = 'selectDefinedGroup',
+                                                                value = F,
+                                                                label = 'Select defined groups?'),
+                                                  checkboxGroupInput(inputId = 'whichGroups',
+                                                                     label = 'Defined Groups',
+                                                                     choices = unique(tsne$id))
+                                             ),
                                              actionButton(inputId = "reload", label = "Select new groups"),
                                              downloadButton(outputId = 'downloadDifGenes', label = 'Download'))),
                          column(8,
                          div(id= "div_select_one", plotlyOutput('tSNE_select_one')),
                          div(id = "div_select_two", plotlyOutput('tSNE_select_two')),
-                         div(id= 'comparisonOutput', dataTableOutput('difGeneTable'), plotlyOutput('tSNE_summary'), plotlyOutput('cell_type_summary'))
+
+                         div(id= 'comparisonOutput', dataTableOutput('difGeneTable'),
+                             br(),
+                             tabsetPanel(tabPanel('histPlot',
+                                                  plotlyOutput('histPlot')),
+                                         tabPanel('tSNE plot',
+                                                  plotlyOutput('tSNE_summary')))
+                             )
                          ))
                )
   )
