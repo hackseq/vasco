@@ -28,7 +28,7 @@ shinyUI(
                         fluidRow(
                                  # main window plots
                                  column(8,
-                                        plotlyOutput('tSNEPlot'),
+                                        plotlyOutput('tSNEPlot',height = '600px'),
                                         plotlyOutput('countPerCluster'))
                         )),
                # panel for displaying individual gene expression data
@@ -84,12 +84,12 @@ shinyUI(
                                              actionButton(inputId = "reload", label = "Select new groups"),
                                              downloadButton(outputId = 'downloadDifGenes', label = 'Download'))),
                          column(10,
-                         div(id= "div_select_one", plotlyOutput('tSNE_select_one')),
-                         div(id = "div_select_two", plotlyOutput('tSNE_select_two')),
+                         div(id= "div_select_one", plotlyOutput('tSNE_select_one',height = '600px')),
+                         div(id = "div_select_two", plotlyOutput('tSNE_select_two',height = '600px')),
                          dataTableOutput('difGeneTable'),
                          div(id= 'comparisonOutput',
                              tabsetPanel(tabPanel('histPlot',
-                                                  plotlyOutput('histPlot')),
+                                                  plotlyOutput('histPlot', height = '500px')),
                                          tabPanel('tSNE plot',
                                                   plotlyOutput('tSNE_summary'), plotlyOutput('cell_type_summary')))
                              )

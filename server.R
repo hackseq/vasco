@@ -237,9 +237,9 @@ shinyServer(function(input, output, session) {
       
       # TODO: Find a better way to preserve gene order
       dg_mat$gene <- factor(dg_mat$gene, levels = dg_mat$gene)
-      
+      dimensions= ceiling(sqrt(length(dg_mat$gene %>% unique)))
       ggplot(dg_mat, aes(x=group, y=expr, fill=group)) + geom_boxplot() +
-        facet_wrap(~gene, scales="free_x", nrow=2, ncol=gene_cnt) +
+        facet_wrap(~gene, scales="free_x", nrow=dimensions, ncol=dimensions) +
         theme(panel.margin = unit(1, "lines"),
               panel.background = element_rect(fill = "white"),
               strip.background = element_rect(fill = "white"),
