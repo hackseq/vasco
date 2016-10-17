@@ -259,6 +259,15 @@ shinyServer(function(input, output, session) {
   })
 
   # plotting selected genes ----------
+  # disable button when empty
+  observe({
+    if(length(input$input_genes)==0){
+      disable('exprGeneButton')
+    }else{
+      enable('exprGeneButton')
+    }
+  })
+  
   geneExpr_genes <- reactive({
     # Take a dependency on input$goButton
     input$exprGeneButton
