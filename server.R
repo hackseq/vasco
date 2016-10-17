@@ -324,19 +324,6 @@ shinyServer(function(input, output, session) {
 
   # histogram of cells -----------
   output$cell_type_summary <- renderPlotly({
-    # browser()
-    # group1 = rValues$tsne[rValues$tsne$barcode %in%  barcodes$Barcode[rValues$selected_vector1],]
-    # group2 = rValues$tsne[rValues$tsne$barcode %in%  barcodes$Barcode[rValues$selected_vector2],]
-    # 
-    # group1$group = 1
-    # group2$group = 2
-    # 
-    # groups = rbind(group1,group2)
-    # 
-    # 
-    # groups %<>% mutate(id = factor(id, levels = rValues$tsne$id %>% unique))
-    # 
-   # rValues$tsne rValues$selected_vector1()
     tsne_id <- table(rValues$tsne$id)
     categories<- dim(tsne_id)
     #make dummy array of all types of tsne clusters so that tables() returns an entry for each type
