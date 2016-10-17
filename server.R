@@ -239,8 +239,11 @@ shinyServer(function(input, output, session) {
       dg_mat$gene <- factor(dg_mat$gene, levels = dg_mat$gene)
       dimensions= ceiling(sqrt(length(dg_mat$gene %>% unique)))
       ggplot(dg_mat, aes(x=group, y=expr, fill=group)) + geom_boxplot() +
+        labs(y="log2(gene expression + 0.1)", x="Group") + 
         facet_wrap(~gene, scales="free_x", nrow=dimensions, ncol=dimensions) +
-        theme(panel.margin = unit(1, "lines"),
+        theme(plot.margin = unit(c(0, 0, 0, 2), "lines"),
+              panel.margin.y = unit(1.5, "lines"),
+              panel.margin.x = unit(0.5, "lines"),
               panel.background = element_rect(fill = "white"),
               strip.background = element_rect(fill = "white"),
               legend.position = "none")
