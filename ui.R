@@ -47,8 +47,9 @@ shinyUI(
                                             ),
                                             conditionalPanel(
                                               condition = "input.checkVisualization == 1",
-                                              sliderInput("Midpoint", label= h3("Midpoint:"), min = 0, max = 1, value = 0.5, step= 0.02)
-                                              #numericInput("Midpoint", label = h3("Midpoint"), value = 1)
+                                              sliderInput("MinMax", label= h5("Range of expression:"), min = 0, max = 1, value = c(0,1), step= 0.02),
+                                              sliderInput("Midpoint", label= h5("Midpoint:"), min = 0, max = 1, value = 0.5, step= 0.02)
+                                               #numericInput("Midpoint", label = h3("Midpoint"), value = 1)
                                             )
                                           )
 
