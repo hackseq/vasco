@@ -27,6 +27,13 @@ shinyUI(
                     color: #404040;
                     line-height: 1.2;
                   }
+                  #title {
+                    font-size: 60px;
+                  }
+                  p#titledescript {
+                    font-size: 16px;
+                    font-style: italic;
+                  }
                   li {
                     font-size: 16px;
                   }
@@ -45,7 +52,7 @@ shinyUI(
 
   extendShinyjs(text = "shinyjs.refresh = function() { redir_Str = window.location.href.split('?')[0] + '?compare'; window.location.href = redir_Str ; }"),
   # Application title
-  # titlePanel(h1("VASCO", id="title")),
+  titlePanel(h1("VASCO", id="title")),
   p("Visualization App for Single Cells Overview", id="titledescript"),
 
   tabsetPanel( id = "main_panel",
