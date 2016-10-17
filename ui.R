@@ -28,6 +28,13 @@ shinyUI(
                     color: #404040;
                     line-height: 1.2;
                   }
+                  #title {
+                    font-size: 60px;
+                  }
+                  p#titledescript {
+                    font-size: 16px;
+                    font-style: italic;
+                  }
                   li {
                     font-size: 16px;
                   }
@@ -47,7 +54,9 @@ shinyUI(
   extendShinyjs(text = "shinyjs.refresh = function() { redir_Str = window.location.href.split('?')[0] + '?compare'; window.location.href = redir_Str ; }"),
 
   # Application title
-  titlePanel("Single cell vis"),
+
+  titlePanel(h1("VASCO", id="title")),
+  p("Visualization App for Single Cells explOration", id="titledescript"),
 
   tabsetPanel( id = "main_panel",
                # main panel for tSNE plot and group selection
@@ -147,7 +156,8 @@ shinyUI(
                                                   plotlyOutput('histPlot', height = '500px')),
                                          tabPanel('Visualize selected groups',
                                                   id = 'tSNE plot',
-                                                  plotlyOutput('tSNE_summary')
+                                                  plotlyOutput('tSNE_summary'),
+                                                  plotlyOutput('cell_type_summary')
                                                   )
                                          )
                              )
