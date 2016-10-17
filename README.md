@@ -2,7 +2,7 @@
 
 Scientific Abstract
 
-VASCO: Visualization Application for Single Cell Overview
+VASCO: Visualization App for Single Cell explOration
 
 Jean-Christophe Berube, Ogan Mancarci, Erin Marshall, Edward Mason, Celia Siu, Ben Weisburd, Shing Hei Zhan, Grace X.Y. Zheng
 
@@ -14,7 +14,7 @@ The application uses the plotly tool with Shiny to enable interaction over a web
 
 Layman Abstract
 
-VASCO: Visualization Application for Single Cell Overview
+VASCO: Visualization App for Single Cell explOration
 
 Jean-Christophe Berube, Ogan Mancarci, Erin Marshall, Edward Mason, Celia Siu, Ben Weisburd, Shing Hei Zhan, Grace X.Y. Zheng
 
