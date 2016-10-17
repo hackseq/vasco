@@ -118,7 +118,7 @@ shinyUI(
                                                                                   label = 'Select predefined cluster(s) for group 1'),
                                                                     checkboxGroupInput(inputId = 'whichGroups',
                                                                                        label = 'Predefined clusters:',
-                                                                                       choices = unique(tsne$id))
+                                                                                       choices = unique(tsne$id) %>% sort)
                                                                ),
                                                                downloadButton(outputId = 'downloadDifGenes', label = 'Download'),
                                                                br(),
@@ -133,7 +133,7 @@ shinyUI(
                                                                              label = 'Select predefined cluster(s)'),
                                                                checkboxGroupInput(inputId = 'whichGroupsForRename',
                                                                                   label = 'Predefined clusters:',
-                                                                                  choices = unique(tsne$id))
+                                                                                  choices = unique(tsne$id) %>% sort)
                                                                )))),
                          column(9,
                          div(id= "div_select_one", plotlyOutput('tSNE_select_one',height = '600px')),
@@ -146,7 +146,9 @@ shinyUI(
                                                   plotlyOutput('histPlot', height = '500px')),
                                          tabPanel('Visualize selected groups',
                                                   id = 'tSNE plot',
-                                                  plotlyOutput('tSNE_summary'), plotlyOutput('cell_type_summary')))
+                                                  plotlyOutput('tSNE_summary')
+                                                  )
+                                         )
                              )
                          ))
                )
