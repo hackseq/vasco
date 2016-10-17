@@ -20,9 +20,9 @@ tsne_xlab <- "TSNE 1"
 tsne_ylab <- "TSNE 2"
 
 geneExpr_maxItems = 4
-geneExpr_colorMin = "grey99"
-geneExpr_colorMax = "red"
-geneExpr_colorMid <- "grey44"
+geneExpr_colorMin = "#EAF7F7"
+geneExpr_colorMax = "#FF00EA"
+geneExpr_colorMid <- "#B8C1D6"
   #colorRampPalette(c(geneExpr_colorMin, geneExpr_colorMax))(4)[2]
 
 rownames(expression) = genes$ID
