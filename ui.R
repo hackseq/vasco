@@ -153,7 +153,8 @@ shinyUI(
                                                   plotlyOutput('histPlot', height = '500px')),
                                          tabPanel('Visualize selected groups',
                                                   id = 'tSNE plot',
-                                                  plotlyOutput('tSNE_summary')
+                                                  plotlyOutput('tSNE_summary'),
+                                                  plotlyOutput('cell_type_summary')
                                                   )
                                          )
                              )
