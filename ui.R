@@ -86,9 +86,8 @@ shinyUI(
                          column(10,
                          div(id= "div_select_one", plotlyOutput('tSNE_select_one')),
                          div(id = "div_select_two", plotlyOutput('tSNE_select_two')),
-
-                         div(id= 'comparisonOutput', dataTableOutput('difGeneTable'),
-                             br(),
+                         dataTableOutput('difGeneTable'),
+                         div(id= 'comparisonOutput',
                              tabsetPanel(tabPanel('histPlot',
                                                   plotlyOutput('histPlot')),
                                          tabPanel('tSNE plot',

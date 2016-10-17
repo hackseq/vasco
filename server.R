@@ -35,7 +35,11 @@ shinyServer(function(input, output, session) {
   output$tSNEPlot <- renderPlotly({
     # size of the bins depend on the input 'bins'
     plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode, source= 'hede') %>%
-      layout(dragmode = "select")
+      layout(
+        dragmode = "select",
+        xaxis = list(title = tsne_xlab),
+        yaxis = list(title = tsne_ylab)
+      )
   })
 
   # COMPARE TAB-------
@@ -43,7 +47,11 @@ shinyServer(function(input, output, session) {
   output$tSNE_select_one <- renderPlotly({
     # size of the bins depend on the input 'bins'
     plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode, source = "selection_plot_one") %>%
-      layout(dragmode = "select")
+      layout(
+        dragmode = "select",
+        xaxis = list(title = tsne_xlab),
+        yaxis = list(title = tsne_ylab)
+      )
   })
 
   # selection code and differential expression ------
@@ -82,7 +90,11 @@ shinyServer(function(input, output, session) {
   output$tSNE_select_two <- renderPlotly({
     input$pop_one_selected
     isolate( plot_ly(tsne, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~id, key = ~barcode, source = "selection_plot_two") %>%
-      layout(dragmode = "select") )
+      layout(
+        dragmode = "select",
+        xaxis = list(title = tsne_xlab),
+        yaxis = list(title = tsne_ylab)
+      ))
   })
 
   # when button one is clicked, update ui and assign cell population to var
@@ -181,27 +193,30 @@ shinyServer(function(input, output, session) {
   # top 10 down-regulated genes
   output$histPlot <- renderPlotly({
     if ( !is.null(differentiallyExpressed()) ) {
+      # TODO: Allow user to specify this
       gene_cnt <- 10
-
+      
       nbr_group1 <- sum(rValues$selected_vector1)
       nbr_group2 <- sum(rValues$selected_vector2)
       nbr_barcodes <- nbr_group1 + nbr_group2
-
+      
       diff_genes <- differentiallyExpressed()$`Gene Symbol`
       if(is.null(input$difGeneTable_rows_selected)){
-        gene_idx <- c(1:gene_cnt, (length(diff_genes)-gene_cnt+1):length(diff_genes))
+        gene_indices <- c(1:gene_cnt, (length(diff_genes)-gene_cnt+1):length(diff_genes))
       } else{
-        gene_idx = input$difGeneTable_rows_selected
+        gene_indices = input$difGeneTable_rows_selected
       }
-
+      
       dg_mat <- c()
-      for ( n in gene_idx ) {
+      for ( n in gene_indices ) {
+        # Get gene expression data and shift/log2-transform
         gene_idx <- which(genes$Symbol == diff_genes[n])
         dat1 <- log2(expression[gene_idx, rValues$selected_vector1] + 0.1)
         dat2 <- log2(expression[gene_idx, rValues$selected_vector2] + 0.1)
-
+        
+        # Store data into matrix of size 'nbr_barcodes' rows by 4 cols
         dg_mat <- rbind(dg_mat,
-                        data.frame(gene = diff_genes[n],
+                        data.frame(gene = rep(diff_genes[n], nbr_barcodes),
                                    expr = c(dat1, dat2),
                                    group = c(rep("1", nbr_group1),
                                              rep("2", nbr_group2)),
@@ -209,7 +224,9 @@ shinyServer(function(input, output, session) {
                         )
         )
       }
-
+      
+      # Ensure that data type for each column is appropriate for ggplot display
+      # TODO: Simplify this...
       dg_mat <-
         dg_mat %>% mutate(
           gene = as.character(gene),
@@ -217,8 +234,10 @@ shinyServer(function(input, output, session) {
           group = as.factor(group),
           panel = as.factor(panel)) %>%
         arrange(panel)
-
+      
+      # TODO: Find a better way to preserve gene order
       dg_mat$gene <- factor(dg_mat$gene, levels = dg_mat$gene)
+      
       ggplot(dg_mat, aes(x=group, y=expr, fill=group)) + geom_boxplot() +
         facet_wrap(~gene, scales="free_x", nrow=2, ncol=gene_cnt) +
         theme(panel.margin = unit(1, "lines"),
@@ -230,7 +249,7 @@ shinyServer(function(input, output, session) {
       plotly_empty()
     }
   })
-
+  
   output$tSNE_summary <- renderPlotly({
     groups <- second_clicked_eds()
     g1 = groups[[1]]
@@ -261,9 +280,9 @@ shinyServer(function(input, output, session) {
     g2_cell_counts<-table(g2$id) - 1
     cell_names <- names(g1_cell_counts)
     data <- as.data.frame(rbind(g1_cell_counts, g2_cell_counts))
-    plot_ly(data, x=cell_names, y=~g1_cell_counts, marker = list(color = 'rgb(0, 0, 128)'),  type='bar', name = 'group 1') %>%
-      add_trace(y=~g2_cell_counts, name = "group 2", marker = list(color = 'rgb(139, 0, 0)')) %>%
-      layout( yaxis = list(title = 'Count'),  barmode = 'group')
+    plot_ly(data, x=cell_names, y=~g1_cell_counts, type='bar', name = 'group 1') %>%
+      add_trace(y=~g2_cell_counts, name = "group 2") %>%
+      layout( yaxis = list(title = 'Count'), barmode = 'group')
   })
 
 

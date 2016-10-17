@@ -8,8 +8,16 @@ source('regexMerge.R')
 
 barcodes = read_tsv('Data/redstone_1_barcodes.tsv', col_names = 'Barcode')
 genes = read_tsv('Data/redstone_1_genes.tsv',col_names = c('ID','Symbol'))
-tsne = read_tsv('Data/redstone_pbmc3k_tdf', skip= 1, col_name = c('barcode','tSNE_1',	'tSNE_2','id' ))
+# tsne = read_tsv('Data/redstone_pbmc3k_tdf', skip= 1,
+#                 col_name = c('barcode','tSNE_1', 'tSNE_2','cluster_id', 'id'),
+#                 col_types = cols(id = col_character())
+#                 )
+tsne = read_tsv('Data/redstone_pbmc3k_tdf', skip= 1,
+                col_name = c('barcode','tSNE_1', 'tSNE_2','id'))
 expression = readMM('Data/redstone_1_matrix.mtx')
+
+tsne_xlab <- "TSNE 1"
+tsne_ylab <- "TSNE 2"
 
 geneExpr_maxItems = 4
 geneExpr_colorMin = "grey99"
@@ -78,6 +86,8 @@ plot_geneExpr <- function(gene_of_interest, gene_name,
       values = c(0, minval, midval, maxval, max_expr),
       rescaler = function(x, ...) x, oob = identity
     ) +
+    xlab(tsne_xlab) +
+    ylab(tsne_ylab) +
     theme_classic() +
     ggtitle(gene_name)
   ggplotly()
