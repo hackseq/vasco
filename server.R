@@ -161,9 +161,12 @@ shinyServer(function(input, output, session) {
   })
 
   second_clicked_eds <-reactive({input$pop_two_selected
-    g1 = tsne[ tsne$barcode %in% barcodes$Barcode[isolate({rValues$selected_vector1})],]
-    g2 = tsne[tsne$barcode %in% barcodes$Barcode[isolate({rValues$selected_vector2})],]
-    list(g1, g2)})
+    barcodes_1 <- barcodes$Barcode[isolate({rValues$selected_vector1})]
+    barcodes_2<- barcodes$Barcode[isolate({rValues$selected_vector2})]
+    g1 = tsne[ tsne$barcode %in% barcodes_1 & !(tsne$barcode %in% barcodes_2),]
+    g2 = tsne[tsne$barcode %in% barcodes_2  & !(tsne$barcode %in% barcodes_1),]
+    intersection = tsne[ tsne$barcode %in% barcodes_2 & tsne$barcode %in% barcodes_1 ,]
+    list(g1, g2, intersection)})
 
 
 
@@ -232,10 +235,12 @@ shinyServer(function(input, output, session) {
     groups <- second_clicked_eds()
     g1 = groups[[1]]
     g2 = groups[[2]]
+    intersection = groups[[3]]
     g1["group"] <- rep('group 1', dim(g1)[1])
     g2["group"] <- rep('group 2', dim(g2)[1])
-    both_groups = rbind(g1, g2)
-    plot_ly(both_groups, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~group, colors = c("dark blue", "dark red"),
+    intersection["group"] <- rep('both', dim(intersection)[1])
+    all_groups = rbind( g1, g2, intersection)
+    plot_ly(all_groups, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~group, colors = c("purple", "dark blue", "dark red"),
             key = ~barcode, source = "selection_plot_two") %>%
                layout(dragmode = "select",xaxis = list(range = c(-40,40)),
                       yaxis = list(range = c(-40,40)))
@@ -249,8 +254,8 @@ shinyServer(function(input, output, session) {
     dummy = data.frame(rep('AAAAAAAAAAAA', 8), rep(1.0, 8), rep(1.0, 8), names(tsne_id))
     names(dummy) = names(tsne)
     groups <- second_clicked_eds()
-    g1 <-  rbind(groups[[1]], dummy)
-    g2 <-  rbind(groups[[2]], dummy)
+    g1 <-  rbind(groups[[1]][c('barcode','tSNE_1',	'tSNE_2','id' )], dummy)
+    g2 <-  rbind(groups[[2]][c('barcode','tSNE_1',	'tSNE_2','id' )], dummy)
     #subtract 1 because we added an extra entry of each type in dummy array
     g1_cell_counts<-table(g1$id) - 1
     g2_cell_counts<-table(g2$id) - 1
