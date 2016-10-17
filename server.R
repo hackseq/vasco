@@ -52,8 +52,9 @@ shinyServer(function(input, output, session) {
   selected_data_two <- reactive({event_data("plotly_selected", source = "selection_plot_two")})
 
   #shows the button when first population selected in plot
-  observeEvent(selected_data(),{
-    if(is.null(selected_data()) | is.null(dim(selected_data()))){
+  observe({
+    if((((is.null(selected_data()) | is.null(dim(selected_data()))) & !input$selectDefinedGroup) | 
+       input$selectDefinedGroup & length(input$whichGroups)==0) | !is.null(rValues$selected_vector1)){
       disable("pop_one_selected")
     } else{
       enable('pop_one_selected')
@@ -69,7 +70,6 @@ shinyServer(function(input, output, session) {
   hide(id="comparisonOutput")
   hide(id = 'downloadDifGenes')
   hide(id="reload")
-  hide(id = 'whichGroups')
   })
 
 
@@ -127,22 +127,36 @@ shinyServer(function(input, output, session) {
   observe({
     if(input$pop_one_selected==1){
       isolate({
-        tsneSubset = tsne[tsne$tSNE_1 %in% selected_data()$x & tsne$tSNE_2 %in% selected_data()$y,]
+        updateCheckboxInput(session, inputId = 'selectDefinedGroup',
+                            value = F,
+                            label = 'Select defined groups?')
+        print('group1 selection attempt')
+        if(!input$selectDefinedGroup){
+          tsneSubset = tsne[tsne$tSNE_1 %in% selected_data()$x & tsne$tSNE_2 %in% selected_data()$y,]
+        } else{
+          tsneSubset = tsne[tsne$id %in% input$whichGroups,]
+        }
         rValues$selected_vector1 = barcodes$Barcode %in% tsneSubset$barcode
       })
     }
   })
   
   observe({
-    hide('div_select_two')
     if(input$pop_two_selected == 1){
+      hide('div_select_two')
+      hide(id = 'definedInputSelection')
       isolate({
-        if(!is.null(selected_data_two())){
-          tsneSubset = tsne[tsne$tSNE_1 %in% selected_data_two()$x & tsne$tSNE_2 %in% selected_data_two()$y,]
+        if(!input$selectDefinedGroup){
+          if(!is.null(selected_data_two())){
+            tsneSubset = tsne[tsne$tSNE_1 %in% selected_data_two()$x & tsne$tSNE_2 %in% selected_data_two()$y,]
+            out = barcodes$Barcode %in% tsneSubset$barcode
+          } else {
+            # if nothing is selected, select the negative set based on tsne
+            out = barcodes$Barcode %in% tsne$barcode[!tsne$barcode %in% barcodes$Barcode[rValues$selected_vector1]]
+          }
+        } else{
+          tsneSubset = tsne[tsne$id %in% input$whichGroups,]
           out = barcodes$Barcode %in% tsneSubset$barcode
-        } else {
-          # if nothing is selected, select the negative set based on tsne
-          out = barcodes$Barcode %in% tsne$barcode[!tsne$barcode %in% barcodes$Barcode[rValues$selected_vector1]]
         }
         rValues$selected_vector2 = out
       })
@@ -279,7 +293,7 @@ shinyServer(function(input, output, session) {
   # plotting selected genes ----------
   # disable button when empty
   observe({
-    if(length(input$input_genes)==0){
+    if(length(input$input_genes)==0 ){
       disable('exprGeneButton')
     }else{
       enable('exprGeneButton')
