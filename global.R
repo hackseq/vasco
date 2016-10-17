@@ -46,7 +46,8 @@ parse_gene_input <- function(x, get="id"){
 }
 
 #' Draw geneExpr scatterplot
-plot_geneExpr <- function(gene_of_interest, gene_name, input_midplot=1,
+plot_geneExpr <- function(gene_of_interest, gene_name, input_midplot=0.5,
+                          color_minval = 0, color_maxval = 1,
                           color_low="grey44", color_mid="grey99", color_high="red"){
   gene_expr <-
     data.frame(
@@ -54,7 +55,10 @@ plot_geneExpr <- function(gene_of_interest, gene_name, input_midplot=1,
       expr = expression[gene_of_interest,]) %>%
     tbl_df()
 
-  input_midplot <- max(gene_expr$expr)*input_midplot
+  max_expr <- max(gene_expr$expr)
+  minval <- max_expr*color_minval
+  maxval <- max_expr*color_maxval
+  midval <- (((maxval-minval)*input_midplot)+minval)
 
   ## Join with tSNE
   tsne1 <-
@@ -63,10 +67,11 @@ plot_geneExpr <- function(gene_of_interest, gene_name, input_midplot=1,
   tsne1 %>%
     ggplot(aes(x=tSNE_1, y=tSNE_2, color=expr)) +
     geom_point(alpha=1, size=.5) +
-    scale_colour_gradient2(low=color_low,
-                           mid=color_mid,
-                           high=color_high,
-                           midpoint=input_midplot) +
+    scale_color_gradientn(
+      colours = c(color_low, color_mid, color_high),
+      values = c(0, minval, midval, maxval, max_expr),
+      rescaler = function(x, ...) x, oob = identity
+    ) +
     theme_classic() +
     ggtitle(gene_name)
   ggplotly()
