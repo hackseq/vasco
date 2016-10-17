@@ -190,27 +190,30 @@ shinyServer(function(input, output, session) {
   # top 10 down-regulated genes
   output$histPlot <- renderPlotly({
     if ( !is.null(differentiallyExpressed()) ) {
+      # TODO: Allow user to specify this
       gene_cnt <- 10
-
+      
       nbr_group1 <- sum(rValues$selected_vector1)
       nbr_group2 <- sum(rValues$selected_vector2)
       nbr_barcodes <- nbr_group1 + nbr_group2
-
+      
       diff_genes <- differentiallyExpressed()$`Gene Symbol`
       if(is.null(input$difGeneTable_rows_selected)){
-        gene_idx <- c(1:gene_cnt, (length(diff_genes)-gene_cnt+1):length(diff_genes))
+        gene_indices <- c(1:gene_cnt, (length(diff_genes)-gene_cnt+1):length(diff_genes))
       } else{
-        gene_idx = input$difGeneTable_rows_selected
+        gene_indices = input$difGeneTable_rows_selected
       }
-
+      
       dg_mat <- c()
-      for ( n in gene_idx ) {
+      for ( n in gene_indices ) {
+        # Get gene expression data and shift/log2-transform
         gene_idx <- which(genes$Symbol == diff_genes[n])
         dat1 <- log2(expression[gene_idx, rValues$selected_vector1] + 0.1)
         dat2 <- log2(expression[gene_idx, rValues$selected_vector2] + 0.1)
-
+        
+        # Store data into matrix of size 'nbr_barcodes' rows by 4 cols
         dg_mat <- rbind(dg_mat,
-                        data.frame(gene = diff_genes[n],
+                        data.frame(gene = rep(diff_genes[n], nbr_barcodes),
                                    expr = c(dat1, dat2),
                                    group = c(rep("1", nbr_group1),
                                              rep("2", nbr_group2)),
@@ -218,7 +221,9 @@ shinyServer(function(input, output, session) {
                         )
         )
       }
-
+      
+      # Ensure that data type for each column is appropriate for ggplot display
+      # TODO: Simplify this...
       dg_mat <-
         dg_mat %>% mutate(
           gene = as.character(gene),
@@ -226,8 +231,10 @@ shinyServer(function(input, output, session) {
           group = as.factor(group),
           panel = as.factor(panel)) %>%
         arrange(panel)
-
+      
+      # TODO: Find a better way to preserve gene order
       dg_mat$gene <- factor(dg_mat$gene, levels = dg_mat$gene)
+      
       ggplot(dg_mat, aes(x=group, y=expr, fill=group)) + geom_boxplot() +
         facet_wrap(~gene, scales="free_x", nrow=2, ncol=gene_cnt) +
         theme(panel.margin = unit(1, "lines"),
@@ -239,7 +246,7 @@ shinyServer(function(input, output, session) {
       plotly_empty()
     }
   })
-
+  
   output$tSNE_summary <- renderPlotly({
     groups <- second_clicked_eds()
     g1 = groups[[1]]
