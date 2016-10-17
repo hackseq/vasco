@@ -100,10 +100,65 @@ shinyServer(function(input, output, session) {
     html(id = "select_text", "Loading...")
     disable(id = "pop_two_selected")
     show('comparisonOutput')
+    show('histPlot')
     show("reload")
   })
-
-
+  
+  # Once group 1 and group 2 of cells are selected,
+  # create 10 boxplots showing the gene expression distributions
+  # of group 1 and group 2 for the top 10 up-regulated and
+  # top 10 down-regulated genes
+  output$histPlot <- renderPlotly({
+    if ( !is.null(differentiallyExpressed()) ) {
+      gene_cnt <- 10
+      
+      nbr_group1 <- sum(selected_vector1())
+      nbr_group2 <- sum(selected_vector2())
+      nbr_barcodes <- nbr_group1 + nbr_group2
+      
+      diff_genes <- differentiallyExpressed()$`Gene Symbol`
+      gene_idx <- c(1:gene_cnt, (length(diff_genes)-gene_cnt+1):length(diff_genes))
+      
+      dg_mat <- c()
+      for ( n in gene_idx ) {
+        gene_idx <- which(genes$Symbol == diff_genes[n])
+        dat1 <- log2(expression[gene_idx, selected_vector1()] + 0.1)
+        dat2 <- log2(expression[gene_idx, selected_vector2()] + 0.1)
+        
+        dg_mat <- rbind(dg_mat, 
+                        data.frame(gene = diff_genes[n],
+                                   expr = c(dat1, dat2),
+                                   group = c(rep("1", nbr_group1),
+                                             rep("2", nbr_group2)),
+                                   panel = rep(n, nbr_barcodes)
+                        )
+        )
+      }
+      
+      # dg_mat %>% mutate(
+      #   gene = as.factor(gene),
+      #   expr = as.numeric(expr),
+      #   group = as.factor(group),
+      #   panel = as.factor(panel)) %>%
+      dg_mat <- 
+        dg_mat %>% mutate(
+          gene = as.character(gene),
+          expr = as.numeric(expr),
+          group = as.factor(group),
+          panel = as.factor(panel)) %>%
+        arrange(panel)
+      
+      dg_mat$gene <- factor(dg_mat$gene, levels = dg_mat$gene)
+      ggplot(dg_mat, aes(x=group, y=expr, fill=group)) +
+        geom_boxplot() +
+        facet_wrap(~gene, scales="free_x",
+                   nrow=2, ncol=gene_cnt)
+      ggplotly()
+    } else {
+      plotly_empty()
+    }
+  })
+  
   #output$newPlot <- renderPlotly({
    # input$pop_selected
     #new_tsne <- isolate(selected_data())
