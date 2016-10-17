@@ -249,22 +249,15 @@ shinyServer(function(input, output, session) {
   output$cell_type_summary <- renderPlotly({
     tsne_id <- table(tsne$id)
     categories<- dim(tsne_id)
+    #make dummy array of all types of tsne clusters so that tables() returns an entry for each type
     dummy = data.frame(rep('AAAAAAAAAAAA', 8), rep(1.0, 8), rep(1.0, 8), names(tsne_id))
     names(dummy) = names(tsne)
-    ax <- list(
-      title = "",
-      zeroline = FALSE,
-      showline = FALSE,
-      showticklabels = FALSE,
-      showgrid = FALSE
-    )
     groups <- second_clicked_eds()
     g1 <-  rbind(groups[[1]], dummy)
     g2 <-  rbind(groups[[2]], dummy)
-    
+    #subtract 1 because we added an extra entry of each type in dummy array
     g1_cell_counts<-table(g1$id) - 1
     g2_cell_counts<-table(g2$id) - 1
-    print(g1_cell_counts)
     cell_names <- names(g1_cell_counts)
     data <- as.data.frame(rbind(g1_cell_counts, g2_cell_counts))
     plot_ly(data, x=cell_names, y=~g1_cell_counts, type='bar', name = 'group 1') %>%
