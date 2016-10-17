@@ -190,7 +190,7 @@ shinyServer(function(input, output, session) {
       } else{
         gene_idx = input$difGeneTable_rows_selected
       }
-      
+
       dg_mat <- c()
       for ( n in gene_idx ) {
         gene_idx <- which(genes$Symbol == diff_genes[n])
@@ -216,8 +216,8 @@ shinyServer(function(input, output, session) {
         arrange(panel)
 
       dg_mat$gene <- factor(dg_mat$gene, levels = dg_mat$gene)
-      ggplot(dg_mat, aes(x=group, y=expr, fill=group)) + geom_boxplot() + 
-        facet_wrap(~gene, scales="free_x", nrow=2, ncol=gene_cnt) + 
+      ggplot(dg_mat, aes(x=group, y=expr, fill=group)) + geom_boxplot() +
+        facet_wrap(~gene, scales="free_x", nrow=2, ncol=gene_cnt) +
         theme(panel.margin = unit(1, "lines"),
               panel.background = element_rect(fill = "white"),
               strip.background = element_rect(fill = "white"),
@@ -364,6 +364,13 @@ shinyServer(function(input, output, session) {
       })
     })
   }
+
+  output$geneExprGeneCluster <- renderPlotly({
+    gene_of_interest <- parse_gene_input(geneExpr_genes())
+    gene_name <- parse_gene_input(geneExpr_genes(), get="name")
+    plot_geneExprGeneCluster(gene_of_interest, gene_name)
+  })
+
 
 }
 )

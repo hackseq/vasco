@@ -58,7 +58,7 @@ shinyUI(
                                           )
 
                                ),
-                        column(8, uiOutput("geneExprPlot"))
+                        column(8, uiOutput("geneExprPlot"), plotlyOutput("geneExprGeneCluster"))
                ),
                # exploration of selection
                tabPanel( 'Compare',

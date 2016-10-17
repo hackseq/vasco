@@ -1,5 +1,6 @@
 library(readr)
 library(dplyr)
+library(tidyr)
 library(Matrix)
 library(plotly)
 library(magrittr)
@@ -81,3 +82,35 @@ plot_geneExpr <- function(gene_of_interest, gene_name,
     ggtitle(gene_name)
   ggplotly()
 }
+
+#' Draw geneExpr boxplot by cluster
+plot_geneExprGeneCluster <- function(gene_of_interest, gene_name){
+  the_genes <- setNames(gene_name, gene_of_interest)
+
+  gene_expr <-
+    expression[names(the_genes),] %>%
+    as.matrix() %>%
+    t() %>%
+    as.data.frame() %>%
+    tibble::rownames_to_column("barcode")
+  tsne1 <-
+    left_join(tsne, gene_expr, by="barcode") %>%
+    gather(gene, expr, starts_with("ENSG")) %>%
+    mutate(
+      gene = as.factor(gene),
+      gene = plyr::revalue(gene, the_genes)
+    )
+  tsne1 %>%
+    ggplot(aes(x=id, y=expr)) +
+    geom_boxplot() +
+    facet_wrap(~gene) +
+    xlab("Cluster") +
+    ylab("Normalized expression") +
+    theme_classic() +
+    theme(
+      axis.text.x = element_text(angle=90, hjust=1, vjust=0.5),
+      strip.background = element_rect(fill = NA, colour = NA)
+    )
+  ggplotly()
+}
+
