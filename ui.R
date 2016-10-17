@@ -128,7 +128,7 @@ shinyUI(
                                                                actionButton(inputId = 'renamePoulationButton',label = 'Rename Selection'),
                                                                checkboxInput(inputId = 'selectDefinedGroupForRename',
                                                                              value = F,
-                                                                             label = 'Select predefined cluster(s) for group 1'),
+                                                                             label = 'Select predefined cluster(s)'),
                                                                checkboxGroupInput(inputId = 'whichGroupsForRename',
                                                                                   label = 'Predefined clusters:',
                                                                                   choices = unique(tsne$id))
