@@ -100,7 +100,7 @@ shinyServer(function(input, output, session) {
   # when button one is clicked, update ui and assign cell population to var
   # and show button two
   observeEvent(input$pop_one_selected, {
-    html(id = "select_text", "Please select second population, or press save to select all outside group 1")
+    html(id = "select_text", "Please select second group, or 'Save group 2' to use the remaining cells as group 2")
     disable(id = "pop_one_selected")
     show(id= "div_select_two")
     show("pop_two_selected")
@@ -138,7 +138,7 @@ shinyServer(function(input, output, session) {
       isolate({
         updateCheckboxInput(session, inputId = 'selectDefinedGroup',
                             value = F,
-                            label = 'Select defined groups?')
+                            label = 'Select predefined cluster(s) for group 2')
         print('group1 selection attempt')
         if(!input$selectDefinedGroup){
           tsneSubset = tsne[tsne$tSNE_1 %in% selected_data()$x & tsne$tSNE_2 %in% selected_data()$y,]
@@ -195,25 +195,25 @@ shinyServer(function(input, output, session) {
     if ( !is.null(differentiallyExpressed()) ) {
       # TODO: Allow user to specify this
       gene_cnt <- 10
-      
+
       nbr_group1 <- sum(rValues$selected_vector1)
       nbr_group2 <- sum(rValues$selected_vector2)
       nbr_barcodes <- nbr_group1 + nbr_group2
-      
+
       diff_genes <- differentiallyExpressed()$`Gene Symbol`
       if(is.null(input$difGeneTable_rows_selected)){
         gene_indices <- c(1:gene_cnt, (length(diff_genes)-gene_cnt+1):length(diff_genes))
       } else{
         gene_indices = input$difGeneTable_rows_selected
       }
-      
+
       dg_mat <- c()
       for ( n in gene_indices ) {
         # Get gene expression data and shift/log2-transform
         gene_idx <- which(genes$Symbol == diff_genes[n])
         dat1 <- log2(expression[gene_idx, rValues$selected_vector1] + 0.1)
         dat2 <- log2(expression[gene_idx, rValues$selected_vector2] + 0.1)
-        
+
         # Store data into matrix of size 'nbr_barcodes' rows by 4 cols
         dg_mat <- rbind(dg_mat,
                         data.frame(gene = rep(diff_genes[n], nbr_barcodes),
@@ -224,7 +224,7 @@ shinyServer(function(input, output, session) {
                         )
         )
       }
-      
+
       # Ensure that data type for each column is appropriate for ggplot display
       # TODO: Simplify this...
       dg_mat <-
@@ -234,7 +234,7 @@ shinyServer(function(input, output, session) {
           group = as.factor(group),
           panel = as.factor(panel)) %>%
         arrange(panel)
-      
+
       # TODO: Find a better way to preserve gene order
       dg_mat$gene <- factor(dg_mat$gene, levels = dg_mat$gene)
       dimensions= ceiling(sqrt(length(dg_mat$gene %>% unique)))
@@ -249,7 +249,7 @@ shinyServer(function(input, output, session) {
       plotly_empty()
     }
   })
-  
+
   output$tSNE_summary <- renderPlotly({
     groups <- second_clicked_eds()
     g1 = groups[[1]]
