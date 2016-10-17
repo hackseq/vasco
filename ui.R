@@ -18,6 +18,31 @@ library(shinythemes)
 shinyUI(
   fluidPage(theme = shinytheme('lumen'),
   useShinyjs(),
+
+  tags$head(
+    tags$style(HTML("
+                  p, li {
+                    /**font-family: 'Lora', 'Times New Roman', serif;**/
+                    font-size: 20px;
+                    color: #404040;
+                    line-height: 1.2;
+                  }
+                  li {
+                    font-size: 16px;
+                  }
+                  body {
+                    padding: 0 2.5em 0 2.5em;
+                  }
+                    li p {
+                    margin: 0;
+                    padding: 0.1em;
+                  }
+                    p + ul {
+                    margin-top: -10px;
+                  }
+                    "))
+    ),
+
   extendShinyjs(text = "shinyjs.refresh = function() { redir_Str = window.location.href.split('?')[0] + '?compare'; window.location.href = redir_Str ; }"),
   # Application title
   titlePanel("Single cell vis"),
