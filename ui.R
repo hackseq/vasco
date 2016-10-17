@@ -11,10 +11,12 @@ library(shiny)
 library(shinyjs)
 library(plotly)
 library(colourpicker)
+library(shinythemes)
+
 
 # Define UI for application that draws a histogram
 shinyUI(
-  fluidPage(
+  fluidPage(theme = shinytheme('cosmo'),
   useShinyjs(),
   extendShinyjs(text = "shinyjs.refresh = function() { redir_Str = window.location.href.split('?')[0] + '?compare'; window.location.href = redir_Str ; }"),
   # Application title
