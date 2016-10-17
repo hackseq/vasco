@@ -284,6 +284,7 @@ shinyServer(function(input, output, session) {
     g2 <-  rbind(groups[[2]][c('barcode','tSNE_1',	'tSNE_2','id' )], dummy)
     intersection <- rbind(groups[[3]][c('barcode','tSNE_1',	'tSNE_2','id' )], dummy)
     #subtract 1 because we added an extra entry of each type in dummy array
+    #also need to add the intersection back into groups because they were taken out in second_clicked_eds
     intersection_counts <- table(intersection$id) - 1
     g1_cell_counts<-table(g1$id) - 1 + intersection_counts
     g2_cell_counts<-table(g2$id) - 1 + intersection_counts
