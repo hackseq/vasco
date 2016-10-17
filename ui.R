@@ -55,8 +55,6 @@ shinyUI(
 
   # Application title
   titlePanel('VASCO'),
-  p("Visualization App for Single Cells Overview", id="titledescript"),
-
   p("Visualization App for Single Cells explOration", id="titledescript"),
 
   tabsetPanel( id = "main_panel",
