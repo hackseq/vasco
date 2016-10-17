@@ -52,7 +52,7 @@ shinyUI(
 
   extendShinyjs(text = "shinyjs.refresh = function() { redir_Str = window.location.href.split('?')[0] + '?compare'; window.location.href = redir_Str ; }"),
   # Application title
-  titlePanel(h1("VASCO", id="title")),
+  titlePanel('VASCO'),
   p("Visualization App for Single Cells Overview", id="titledescript"),
 
   tabsetPanel( id = "main_panel",
