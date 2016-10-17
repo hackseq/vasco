@@ -91,7 +91,7 @@ shinyServer(function(input, output, session) {
     show(id= "div_select_two")
     show("pop_two_selected")
     hide(id="div_select_one")
-    
+
 
   })
 
@@ -103,7 +103,7 @@ shinyServer(function(input, output, session) {
     show('histPlot')
     show("reload")
   })
-  
+
   # Once group 1 and group 2 of cells are selected,
   # create 10 boxplots showing the gene expression distributions
   # of group 1 and group 2 for the top 10 up-regulated and
@@ -111,21 +111,21 @@ shinyServer(function(input, output, session) {
   output$histPlot <- renderPlotly({
     if ( !is.null(differentiallyExpressed()) ) {
       gene_cnt <- 10
-      
+
       nbr_group1 <- sum(selected_vector1())
       nbr_group2 <- sum(selected_vector2())
       nbr_barcodes <- nbr_group1 + nbr_group2
-      
+
       diff_genes <- differentiallyExpressed()$`Gene Symbol`
       gene_idx <- c(1:gene_cnt, (length(diff_genes)-gene_cnt+1):length(diff_genes))
-      
+
       dg_mat <- c()
       for ( n in gene_idx ) {
         gene_idx <- which(genes$Symbol == diff_genes[n])
         dat1 <- log2(expression[gene_idx, selected_vector1()] + 0.1)
         dat2 <- log2(expression[gene_idx, selected_vector2()] + 0.1)
-        
-        dg_mat <- rbind(dg_mat, 
+
+        dg_mat <- rbind(dg_mat,
                         data.frame(gene = diff_genes[n],
                                    expr = c(dat1, dat2),
                                    group = c(rep("1", nbr_group1),
@@ -134,20 +134,20 @@ shinyServer(function(input, output, session) {
                         )
         )
       }
-      
+
       # dg_mat %>% mutate(
       #   gene = as.factor(gene),
       #   expr = as.numeric(expr),
       #   group = as.factor(group),
       #   panel = as.factor(panel)) %>%
-      dg_mat <- 
+      dg_mat <-
         dg_mat %>% mutate(
           gene = as.character(gene),
           expr = as.numeric(expr),
           group = as.factor(group),
           panel = as.factor(panel)) %>%
         arrange(panel)
-      
+
       dg_mat$gene <- factor(dg_mat$gene, levels = dg_mat$gene)
       ggplot(dg_mat, aes(x=group, y=expr, fill=group)) +
         geom_boxplot() +
@@ -158,7 +158,7 @@ shinyServer(function(input, output, session) {
       plotly_empty()
     }
   })
-  
+
   #output$newPlot <- renderPlotly({
    # input$pop_selected
     #new_tsne <- isolate(selected_data())
@@ -190,9 +190,9 @@ shinyServer(function(input, output, session) {
     }
   )
   second_clicked <-reactive({input$pop_two_selected})
-  
 
-  
+
+
   output$tSNE_summary <- renderPlotly({
     second_clicked()
     g1 = tsne[ tsne$barcode %in% barcodes$Barcode[isolate({selected_vector1()})],]
@@ -200,14 +200,14 @@ shinyServer(function(input, output, session) {
     g1["group"] <- rep('group 1', dim(g1)[1])
     g2["group"] <- rep('group 2', dim(g2)[1])
     both_groups = rbind(g1, g2)
-    plot_ly(both_groups, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~group, colors = c("dark blue", "dark red"), 
+    plot_ly(both_groups, x = ~tSNE_1, y = ~tSNE_2, text = ~barcode, color = ~group, colors = c("dark blue", "dark red"),
             key = ~barcode, source = "selection_plot_two") %>%
                layout(dragmode = "select",xaxis = list(range = c(-40,40)),
                       yaxis = list(range = c(-40,40)))
-        
+
     })
-    
-  
+
+
 
   output$downloadDifGenes = downloadHandler(
     filename = 'difGenes.tsv',
@@ -290,7 +290,7 @@ shinyServer(function(input, output, session) {
       output[[plotname]] <- renderPlotly({
         gene_of_interest <- parse_gene_input(geneExpr_genes()[my_i])
         gene_name <- parse_gene_input(geneExpr_genes()[my_i], get="name")
-        plot_geneExpr(gene_of_interest, gene_name, input_midplot=input$Midpoint)
+        plot_geneExpr(gene_of_interest, gene_name, input_midplot=input$Midpoint, color_low = input$colmin, color_mid = input$colmid, color_high = input$colmax)
       })
     })
   }
