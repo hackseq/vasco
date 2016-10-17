@@ -314,7 +314,11 @@ shinyServer(function(input, output, session) {
 
   output$difGeneTable = renderDataTable({
     if(!is.null(differentiallyExpressed())){
-      datatable(differentiallyExpressed(),selection = 'multiple')
+      table = differentiallyExpressed()
+      table %<>% mutate(`Fold change` = format(`Fold change`, digits = 3,scientific=FALSE)) %>%
+        mutate(`group1 Expression` = format(`group1 Expression`, digits = 3,scientific=FALSE)) %>% 
+        mutate(`group2 Expression` = format(`group2 Expression`, digits = 3,scientific=FALSE))
+      datatable(table,selection = 'multiple')
     }
   })
   # if a gene is selected from the data table, select that gene in the expression window
