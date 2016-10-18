@@ -123,7 +123,7 @@ shinyServer(function(input, output, session) {
 
   # when button two is clicked, update ui and assign cell population to var
   observeEvent(input$pop_two_selected, {
-    html(id = "select_text", "Loading...")
+    html(id = "select_text", "")
     disable(id = "pop_two_selected")
     show('comparisonOutput')
     show('histPlot')

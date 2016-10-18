@@ -18,7 +18,8 @@ library(shinythemes)
 shinyUI(
   fluidPage(theme = shinytheme('lumen'),
             useShinyjs(),
-            
+            img(src='Vasco_2.png', align = "left", height=100),
+            hr(),
             tags$head(
               tags$style(HTML("
                   p, li {
@@ -49,12 +50,13 @@ shinyUI(
                   }
                     "))
             ),
-            
+
             extendShinyjs(text = "shinyjs.refresh = function() { redir_Str = window.location.href.split('?')[0] + '?compare'; window.location.href = redir_Str ; }"),
             # Application title
-            titlePanel(h1("VASCO", id="title")),
-            p("Visualization App for Single Cells Overview", id="titledescript"),
-            
+            titlePanel('VASCO'),
+            #titlePanel(h1("VASCO", id="title")),
+            p("Visualization App for Single Cells explOration", id="titledescript"),
+
             tabsetPanel( id = "main_panel",
                          # main panel for tSNE plot and group selection
                          tabPanel('Summary',
@@ -69,13 +71,13 @@ shinyUI(
                                                 It takes the gene-barcode matrix and the clustering result as input."),
                                              tags$p("Users can:")
                                            ),
-                                           
+
                                            tags$ul(
                                              tags$li("visualize the cells using t-distributed stochastic neighbour embedding (t-SNE) plots"),
                                              tags$li("explore the expression pattern of specific genes"),
                                              tags$li("investigate the identity of cell clusters by examining genes that are specific to a cluster")
                                            )),
-                                    
+
                                     # main window plots
                                     column(8,
                                            plotlyOutput('tSNEPlot',height = '600px'),
@@ -90,12 +92,12 @@ shinyUI(
                                   column(4, wellPanel(selectizeInput('input_genes', h1('Select genes'),
                                                                      choices = list_of_genesymbols,
                                                                      options = list(maxItems = geneExpr_maxItems),
-                                                                     selected = c('CD8A_ENSG00000153563'),
+                                                                     selected = c('LGALS1_ENSG00000100097'),
                                                                      multiple = TRUE),
                                                       actionButton("exprGeneButton", "Visualize"),
                                                       div(id = 'tsneHeatmapOptions',
-                                                          sliderInput("MinMax", label= h5("Adjust heatmap color scale:"), min = 0, max = 1, value = c(0,1), step= 0.02),
-                                                          sliderInput("Midpoint", label= h5("Adjust midpoint of color scale:"), min = 0, max = 1, value = 0.5, step= 0.02),
+                                                          sliderInput("MinMax", label= h5("Adjust heatmap color scale:"), min = 0, max = 1, value = c(0,0.4), step= 0.02),
+                                                          sliderInput("Midpoint", label= h5("Adjust midpoint of color scale:"), min = 0, max = 1, value = 0.1, step= 0.02),
                                                           colourInput("colmax", "Select color of scale maximum", value = geneExpr_colorMax),
                                                           colourInput("colmid", "Select color of scale midpoint", value = geneExpr_colorMid),
                                                           colourInput("colmin", "Select color of scale minimum", value = geneExpr_colorMin)
@@ -113,7 +115,7 @@ shinyUI(
                          tabPanel( 'Explore clusters',
                                    id= 'Compare',
                                    tabsetPanel(tabPanel('Compare',
-                                                        column(3,
+                                                        column(3,wellPanel(
                                                                h4(id = "select_text", "Please select first group"),
                                                                actionButton(inputId = "pop_one_selected", label = "Save group 1"),
                                                                actionButton(inputId = "pop_two_selected", label = "Save group 2"),
@@ -129,13 +131,13 @@ shinyUI(
                                                                downloadButton(outputId = 'downloadDifGenes', label = 'Download'),
                                                                br(),
                                                                br(),
-                                                               actionButton(inputId = "reload", label = "Select new groups")),
+                                                               actionButton(inputId = "reload", label = "Select new groups"))),
                                                         column(9,
                                                                div(id= "div_select_one", plotlyOutput('tSNE_select_one',height = '600px')),
                                                                div(id = "div_select_two", plotlyOutput('tSNE_select_two',height = '600px')),
                                                                dataTableOutput('difGeneTable'),
                                                                div(id= 'comparisonOutput',
-                                                                   
+
                                                                    tabsetPanel(tabPanel('Visualize genes',
                                                                                         id = "histPlot",
                                                                                         plotlyOutput('histPlot', height = '500px')),
@@ -159,11 +161,11 @@ shinyUI(
                                                                                   label = 'Predefined clusters:',
                                                                                   choices = unique(tsne$id) %>% sort)),
                                                         column(9,
-                                                                plotlyOutput('tSNE_selectForRename',height = '600px')))
+                                                               plotlyOutput('tSNE_selectForRename',height = '600px')))
                                    )
                          )
             )
   )
 )
-  
-  
+
+
