@@ -12,7 +12,7 @@ library(shinyjs)
 library(plotly)
 library(colourpicker)
 library(shinythemes)
-
+library(V8)
 
 # Define UI for application that draws a histogram
 shinyUI(
