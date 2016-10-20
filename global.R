@@ -1,9 +1,11 @@
+print("ok let''s start this")
 library(readr)
 library(dplyr)
 library(tidyr)
 library(Matrix)
 library(plotly)
 library(magrittr)
+library(qlcMatrix)
 source('regexMerge.R')
 
 barcodes = read_tsv('Data/redstone_1_barcodes.tsv', col_names = 'Barcode')
@@ -14,7 +16,13 @@ tsne = read_tsv('Data/redstone_pbmc3k_tdf', skip= 1,
                 )
 # tsne = read_tsv('Data/redstone_pbmc3k_tdf', skip= 1,
 #                 col_name = c('barcode','tSNE_1', 'tSNE_2','id'))
+print('expression data read')
 expression = readMM('Data/redstone_1_matrix.mtx')
+print('set rownames')
+rownames(expression) = genes$ID
+print('set colnames')
+colnames(expression) = barcodes$Barcode
+print('data reading complete')
 
 tsne_xlab <- "TSNE 1"
 tsne_ylab <- "TSNE 2"
@@ -23,15 +31,18 @@ geneExpr_maxItems = 4
 geneExpr_colorMin = "#EAF7F7"
 geneExpr_colorMax = "#FF00EA"
 geneExpr_colorMid <- "#B8C1D6"
-  #colorRampPalette(c(geneExpr_colorMin, geneExpr_colorMax))(4)[2]
+print('initialized parameters')
 
-rownames(expression) = genes$ID
-colnames(expression) = barcodes$Barcode
+#colorRampPalette(c(geneExpr_colorMin, geneExpr_colorMax))(4)[2]
 
 # get rid of genes (aka. rows) for which all cells have expression = 0
-rowMax <- expression %>% apply(1,max)
-expression <- expression[rowMax>0,]
-genes <- genes[rowMax > 0,]
+rowMax <- expression %>% (qlcMatrix::rowMax)
+print('rowmax calculated')
+expression <- expression[(rowMax>0) %>% as.logical,]
+print('genes removed from expression matrix')
+genes <- genes[(rowMax>0) %>% as.logical,]
+print('genes removed from genes')
+print('non expressed genes removed')
 
 normalizeExpresion = function(v) {
   # for each cell, compute total expression
@@ -133,3 +144,4 @@ plot_geneExprGeneCluster <- function(gene_of_interest, gene_name,tsne){
   ggplotly()
 }
 
+print('global excecuted')

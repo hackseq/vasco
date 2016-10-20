@@ -17,7 +17,7 @@ library(magrittr)
 library(DT)
 
 source('difGenes.R')
-
+print('starting server')
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
@@ -41,7 +41,7 @@ shinyServer(function(input, output, session) {
         yaxis = list(title = tsne_ylab)
       )
   })
-  
+
   # main SNE plot ---------
   output$tSNEPlot <- renderPlotly({
     # size of the bins depend on the input 'bins'
@@ -67,9 +67,9 @@ shinyServer(function(input, output, session) {
 
   # selection code and differential expression ------
   selected_data <- reactive({event_data("plotly_selected", source = "selection_plot_one")})
-  
+
   selected_data_toRename <- reactive({event_data("plotly_selected", source = "selectForRename")})
-  
+
   selected_data_two <- reactive({event_data("plotly_selected", source = "selection_plot_two")})
 
   #shows the button when first population selected in plot
@@ -151,7 +151,7 @@ shinyServer(function(input, output, session) {
   observe({
     print(input$renamePoulationButton)
   })
-  
+
   observe({
     if(input$renamePoulationButton>=1){
       isolate({
