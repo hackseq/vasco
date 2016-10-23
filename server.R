@@ -156,16 +156,20 @@ shinyServer(function(input, output, session) {
     if(input$renamePoulationButton>=1){
       isolate({
         if(!input$selectDefinedGroupForRename){
-          tsneSubset = rValues$tsne[rValues$tsne$tSNE_1 %in% selected_data_toRename()$x & rValues$tsne$tSNE_2 %in% selected_data_toRename()$y,]
-        } else{
+          tsneSubset = rValues$tsne[round(rValues$tsne$tSNE_1, 5) %in% round(selected_data_toRename()$x, 5) & round(rValues$tsne$tSNE_2, 5) %in% round(selected_data_toRename()$y, 5),]
+          #statements for debugging selection problem in create
+          #print('selected data rename')
+          #print(data.frame(selected_data_toRename()[(round(selected_data_toRename()$x, 5) == -25.66376),]))
+          #print(rValues$tsne[(round(rValues$tsne$tSNE_1, 5) == -25.66376),])
+          notPlotting = rValues$tsne[!(round(rValues$tsne$tSNE_1, 4) %in% round(selected_data_toRename()$x, 4) ),]
+          } else{
           tsneSubset = rValues$tsne[rValues$tsne$id %in% input$whichGroupsForRename,]
         }
         out = tsneSubset$barcode
 
-        print('setting tsne ids')
+        
 
         rValues$tsne[rValues$tsne$barcode %in% out,'id'] = input$newClusterName
-
         # update everything that uses old clusters
         updateCheckboxGroupInput(session,
                                  inputId = 'whichGroups',
