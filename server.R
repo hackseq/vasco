@@ -157,11 +157,6 @@ shinyServer(function(input, output, session) {
       isolate({
         if(!input$selectDefinedGroupForRename){
           tsneSubset = rValues$tsne[round(rValues$tsne$tSNE_1, 5) %in% round(selected_data_toRename()$x, 5) & round(rValues$tsne$tSNE_2, 5) %in% round(selected_data_toRename()$y, 5),]
-          #statements for debugging selection problem in create
-          #print('selected data rename')
-          #print(data.frame(selected_data_toRename()[(round(selected_data_toRename()$x, 5) == -25.66376),]))
-          #print(rValues$tsne[(round(rValues$tsne$tSNE_1, 5) == -25.66376),])
-          notPlotting = rValues$tsne[!(round(rValues$tsne$tSNE_1, 4) %in% round(selected_data_toRename()$x, 4) ),]
           } else{
           tsneSubset = rValues$tsne[rValues$tsne$id %in% input$whichGroupsForRename,]
         }
