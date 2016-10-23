@@ -154,7 +154,6 @@ shinyServer(function(input, output, session) {
 
   observe({
     if(input$renamePoulationButton>=1){
-      isolate({
         if(!input$selectDefinedGroupForRename){
           tsneSubset = rValues$tsne[round(rValues$tsne$tSNE_1, 5) %in% round(selected_data_toRename()$x, 5) & round(rValues$tsne$tSNE_2, 5) %in% round(selected_data_toRename()$y, 5),]
           } else{
@@ -174,9 +173,10 @@ shinyServer(function(input, output, session) {
                                  inputId = 'whichGroupsForRename',
                                  label = 'Predefined clusters:',
                                  choices = unique(rValues$tsne$id) %>% sort)
+    }
     })
-  }
-})
+  
+
 
   # do I want to select defined groups?------
   observe({
