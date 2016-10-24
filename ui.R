@@ -163,7 +163,25 @@ shinyUI(
                                                         column(9,
                                                                plotlyOutput('tSNE_selectForRename',height = '600px')))
                                    )
-                         )
+                         ),
+                         tabPanel( 'Upload data',
+                                   id= 'upload',
+                                   sidebarPanel(fileInput('barcodes_file', 'Barcodes .tsv File',
+                                             accept=c('text/tsv', 
+                                                      'text/comma-separated-values,text/plain', 
+                                                      '.tsv')), 
+                                             fileInput('genes_file', 'Genes .tsv File',
+                                                       accept=c('text/tsv', 
+                                                                'text/comma-separated-values,text/plain', 
+                                                                '.tsv')),
+                                             fileInput('tsne_file', 'tsne tdf File',
+                                                         accept = NULL),
+                                   fileInput('mtx_file', 'Expression matrix .mtx File',
+                                             accept=c(
+                                                      '.mtx')), 
+                                   actionButton(inputId = "upload_button", label = "Submit Data")
+                                   )
+                                   )
             )
   )
 )

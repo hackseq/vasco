@@ -479,6 +479,41 @@ shinyServer(function(input, output, session) {
     gene_name <- parse_gene_input(geneExpr_genes(), get="name")
     plot_geneExprGeneCluster(gene_of_interest, gene_name,tsne = rValues$tsne)
   })
+  
+  
+  #upload file page
+  observeEvent(input$upload_button,{
+    print("hello")
+    barcodes_file <- input$barcodes_file
+    genes_file <- input$genes_file
+    tsne_file <- input$tsne_file
+    mtx_file <- input$mtx_file
+    if (is.null(barcodes_file) || is.null(genes_file) || is.null(tsne_file) || is.null(mtx_file)){
+      print("missing file detected")
+      print(is.null(barcodes_file))
+      print(is.null(genes_file))
+      print(is.null(tsne_file))
+      print(is.null(mtx_file))
+      
+      return(NULL)
+    }
+    else{
+      barcodes = read_tsv(barcodes_file$datapath, col_names = 'Barcode')
+      genes = read_tsv(genes_file$datapath, col_names = c('ID','Symbol'))
+      tsne = read_tsv(tsne_file$datapath, skip= 1,
+                      col_name = c('barcode','tSNE_1', 'tSNE_2','cluster_id', 'id'),
+                      col_types = cols(id = col_character())
+      )
+      expression = readMM(mtx_file$datapath)
+      rownames(expression) = genes$ID
+      colnames(expression) = barcodes$Barcode
+      print('data reading complete')
+      updateTabsetPanel(session, inputId = 'main_panel', 'Summary')
+      
+    }
+    
+    
+  })
 
 
 }
